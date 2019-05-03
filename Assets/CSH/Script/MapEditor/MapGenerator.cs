@@ -5,7 +5,6 @@ public class MapGenerator : MonoBehaviour {
 
 	public Transform tilePrefab;
 	public Vector2 mapSize;
-    public bool refreshCheck;
 
 	[Range(0,1)]
 	public float outlinePercent;
@@ -32,7 +31,6 @@ public class MapGenerator : MonoBehaviour {
 				newTile.parent = mapHolder;
 			}
 		}
-
 	}
 
 }
