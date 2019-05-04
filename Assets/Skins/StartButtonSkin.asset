@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6e358058433dfd43a6d120dd1d91461, type: 3}
+  m_Name: StartButtonSkin
+  m_EditorClassIdentifier: 
+  normalSprite: {fileID: 21300014, guid: 97e4d2171fc5d424f9230a08a79c9861, type: 3}
+  buttonSpriteState:
+    m_HighlightedSprite: {fileID: 21300010, guid: 97e4d2171fc5d424f9230a08a79c9861,
+      type: 3}
+    m_PressedSprite: {fileID: 21300012, guid: 97e4d2171fc5d424f9230a08a79c9861, type: 3}
+    m_DisabledSprite: {fileID: 21300008, guid: 97e4d2171fc5d424f9230a08a79c9861, type: 3}
+  sizeDelta: {x: 400, y: 150}
+  iconAnchorMin: {x: 0.5, y: 1}
+  iconAnchorMax: {x: 0.5, y: 1}
+  iconAnchoredPosition: {x: -0, y: 0}
+  iconSizeDelta: {x: 100, y: 100}
+  font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  fontStyle: 1
+  fontSize: 50
