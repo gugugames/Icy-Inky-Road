@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 namespace ClientLibrary
 {
-    public class BuildingSystem : MonoBehaviourPun
+    public class BuildingSystem : MonoBehaviour
     {
         private Grid grid;
 
