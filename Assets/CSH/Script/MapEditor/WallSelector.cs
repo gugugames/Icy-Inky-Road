@@ -18,8 +18,16 @@ public class WallSelector : MonoBehaviour
     //private WallInfo[] wallInfo;
     private GameObject currentWall;
 
+    [HideInInspector]
+    public int currentId;
 
-    public void SetWall(int WallId) {
-        currentWall = Instantiate(WallDatabase.Instance.GetByID(WallId).wallPrefab, transform.position + Vector3.up * .5f, Quaternion.identity ,transform.parent);
+    public int SetWall(int WallId) {
+        if (WallId == 0 && currentWall != null) {
+            DestroyImmediate(currentWall);
+        }
+        else {
+            currentWall = Instantiate(WallDatabase.Instance.GetByID(WallId).wallPrefab, transform.position + Vector3.up * .5f, Quaternion.identity ,transform.parent);
+        }
+        return WallId;
      }
 }
