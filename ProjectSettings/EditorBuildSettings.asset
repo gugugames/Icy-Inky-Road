@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/LobbyScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/GameplayScene.unity
+    guid: 74fef4d7ecfb19d4ebfc09ab51da4f38
+  - enabled: 1
+    path: Assets/Scenes/MyIglooScene.unity
+    guid: ef0f99ee978077f4bb471aa527d4896e
+  - enabled: 1
+    path: Assets/Scenes/ShopScene.unity
+    guid: e12c0f06d0cf66a4481fece9c43d322f
   m_configObjects: {}
