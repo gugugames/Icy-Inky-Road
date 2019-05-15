@@ -5,6 +5,8 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 
+
+
 # Visual Studio cache directory
 .vs/
 
@@ -34,3 +36,11 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+
+    [merge]
+        tool = unityyamlmerge
+
+        [mergetool "unityyamlmerge"]
+        trustExitCode = false
+        cmd = '<path to UnityYAMLMerge>' merge -p "$BASE" "$REMOTE" "$LOCAL" "$MERGED"
