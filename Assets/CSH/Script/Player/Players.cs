@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 
 //Player inherits from MovingObject, our base class for objects that can move, Enemy also inherits from this.
-public class Player : MovingObject
+public class Players : MovingObject
 {
     public int horizontal = 0;     //Used to store the horizontal move direction.
     public int vertical = 0;
@@ -15,7 +15,7 @@ public class Player : MovingObject
 private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
 #endif
 
-    public static Player instance = null;
+    public static Players instance = null;
 
     public Vector3 Position
     {
@@ -55,7 +55,6 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
     private void MoveCtrl() {
         //If it's not the player's turn, exit the function.
-        if (!GameManager.instance.playersTurn) return;
 
         horizontal = 0;     //Used to store the horizontal move direction.
         vertical = 0;      //Used to store the vertical move direction.
@@ -129,7 +128,6 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
     //AttemptMove takes a generic parameter T which for Player will be of the type Wall, it also takes integers for x and y direction to move in.
     protected override void AttemptMove<T>(int xDir, int yDir) {
         //Set the playersTurn boolean of GameManager to false now that players turn is over.
-        GameManager.instance.playersTurn = false;
 
         //Call the AttemptMove method of the base class, passing in the component T (in this case Wall) and x and y direction to move.
         base.AttemptMove<T>(xDir, yDir);
@@ -143,7 +141,6 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
     //It takes a generic parameter T which in the case of Player is a Wall which the player can attack and destroy.
     protected override void OnCantMove<T>(T component) {
             
-        print("playersTurn1 : " + GameManager.instance.playersTurn);
     }
 }
 
