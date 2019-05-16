@@ -11,13 +11,22 @@ namespace ClientLibrary
         public static Grid instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
         public int mapSize = 10;
         public bool[,] mapArray;
+        public string[,] shareArray;
+
+        private int sharePointA = 0;
+        private int sharePointB = 0;
+
         //Awake is always called before any Start functions
         void Awake()
         {
             //Check if instance already exists
             if (instance == null)
             {
+                //position array
                 SetMapArray();
+
+                //grid 점유율
+                SetMapShareArray();
 
                 //if not, set instance to this
                 instance = this;
@@ -83,22 +92,26 @@ namespace ClientLibrary
             print("setmap done");
         }
 
+        public void SetMapShareArray()
+        {
+            shareArray = new string[mapSize, mapSize];
+            for (int x = 0; x < mapSize; x += size)
+            {
+                for (int z = 0; z > mapSize; z += size)
+                {
+                    shareArray[x, z] = null;
+                }
+
+            }
+            print("setmap done");
+        }
+
         public Vector3 GridPositionToArray(Vector3 position)
         {
             //print("AAAA : " + (position.x + (mapSize / 2) - 0.5f));
             return new Vector3(position.x + (mapSize / 2) - 0.5f, 
                 position.y,
                 position.z + (mapSize / 2) - 0.5f);
-        }
-
-        public bool BoolCurrentPosition(Vector3 position, bool? setBool = null)
-        {
-            //print("AA");
-            Vector3 gridPosition = GridPositionToArray(position);
-            if(setBool != null)
-                mapArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
-            //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
-            return mapArray[(int)gridPosition.x, (int)gridPosition.z];
         }
 
         public Vector3 GetCurrnetGrid(Vector3 position, Vector3? dir = null)
@@ -112,6 +125,81 @@ namespace ClientLibrary
             //print("GetCurrnetGrid : " + GetNearestPointOnGrid(transform.position + dir * 2));
             return GetNearestPointOnGrid(position + dir);
         }
+
+        //나중에 두 메서드 합쳐야함 BoolCurrentPosition, GridShare
+        public bool BoolCurrentPosition(Vector3 position, bool? setBool = null)
+        {
+            //print("AA");
+            Vector3 gridPosition = GridPositionToArray(position);
+            if (setBool != null)
+                mapArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
+            //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
+            return mapArray[(int)gridPosition.x, (int)gridPosition.z];
+        }
+
+        public string GridShare(Vector3 position, string shareTeam = null)
+        {
+            //print("AA");
+            Vector3 gridPosition = GridPositionToArray(position);
+
+
+            //점유 되어있는 곳이 없고 B가 점유를 할 예정일때
+            if (GridShare(position) == null && shareTeam == "B")
+            {
+                //B의 점수를 올린다.
+                sharePointB++;
+            }
+            //점유 되어있는 곳이 없고 A가 점유를 할 예정일때
+            else if (GridShare(position) == null && shareTeam == "A")
+            {
+                //A의 점수를 올린다.
+                sharePointA++;
+            }
+            //점유 되어있는 곳이 A이고 B가 점유를 할 예정일때
+            else if (GridShare(position) == "A" && shareTeam == "B")
+            {
+                //B의 점수를 올리고 A점수를 낮춘다.
+                sharePointA--;
+                sharePointB++;
+            }
+            //점유 되어있는 곳이 B이고 A가 점유를 할 예정일때
+            else if (GridShare(position) == "B" && shareTeam == "A")
+            {
+                //A의 점수를 올리고 B점수를 낮춘다.
+                sharePointA++;
+                sharePointB--;
+            }
+            
+
+            if (shareTeam != null)
+            {
+                shareArray[(int)gridPosition.x, (int)gridPosition.z] = shareTeam;
+                print(GetShareText() + "");
+            }
+            //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
+
+            return shareArray[(int)gridPosition.x, (int)gridPosition.z];
+        }
+        
+        public string GetShareText()
+        {
+            return "A : " + sharePointA + ", B : " + sharePointB;
+        }
+
+        public string GetShare(Vector3 position)
+        {
+            return GridShare(position);
+        }
+
+        public void SetShare(bool whoGetPoint)
+        {
+            if(whoGetPoint == true)
+            {
+                sharePointA++;
+            }
+        }
+
+
     }
 
 }

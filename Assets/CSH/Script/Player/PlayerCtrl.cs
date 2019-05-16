@@ -252,6 +252,8 @@ if (Input.touchCount > 0)
                 transform.Translate(dir.Value * speed);
                 //print("SmoothMovement");
             }
+            //나중에 최적화를 위해 위치 변경
+            //grid.GridShare(transform.position, "A");
             yield return null;
 
         }
