@@ -75,7 +75,8 @@ namespace ClientLibrary
                     
                 }
                 else {
-                    Destroy(currentTemplateBlock.gameObject);
+                    if(currentTemplateBlock != null)
+                        Destroy(currentTemplateBlock.gameObject);
                     
                 }
             }

@@ -80,11 +80,12 @@ namespace ClientLibrary
                 }
 
             }
+            print("setmap done");
         }
 
         public Vector3 GridPositionToArray(Vector3 position)
         {
-            print("AAAA : " + (position.x + (mapSize / 2) - 0.5f));
+            //print("AAAA : " + (position.x + (mapSize / 2) - 0.5f));
             return new Vector3(position.x + (mapSize / 2) - 0.5f, 
                 position.y,
                 position.z + (mapSize / 2) - 0.5f);
@@ -92,11 +93,24 @@ namespace ClientLibrary
 
         public bool BoolCurrentPosition(Vector3 position, bool? setBool = null)
         {
+            //print("AA");
             Vector3 gridPosition = GridPositionToArray(position);
             if(setBool != null)
                 mapArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
-            print("GridPositionToArray : " + mapArray[0,0]);
+            //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
             return mapArray[(int)gridPosition.x, (int)gridPosition.z];
+        }
+
+        public Vector3 GetCurrnetGrid(Vector3 position, Vector3? dir = null)
+        {
+            //print("GetCurrnetGrid : " + grid.GetNearestPointOnGrid(transform.position));
+            return GetNearestPointOnGrid(position);
+        }
+
+        public Vector3 GetNextGrid(Vector3 position, Vector3 dir)
+        {
+            //print("GetCurrnetGrid : " + GetNearestPointOnGrid(transform.position + dir * 2));
+            return GetNearestPointOnGrid(position + dir);
         }
     }
 

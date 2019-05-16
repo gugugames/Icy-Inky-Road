@@ -9,7 +9,7 @@ public class PlayerCtrl : MonoBehaviour
     public int horizontal = 0;     //Used to store the horizontal move direction.
     public int vertical = 0;
     public int queueLimit=2;
-
+    public TextMesh tm;
 
     private int inputXDir;
     private int inputYDir;
@@ -20,7 +20,7 @@ public class PlayerCtrl : MonoBehaviour
     private CharacterController controller;
 
     public LayerMask blockingLayer;         //Layer on which collision will be checked.
-    public float speed = 6.0F;
+    public float speed = 0.1f;
 
     private bool playerTurn;
     private Vector3 moveDirection = Vector3.zero;
@@ -53,6 +53,8 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
             //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
             Destroy(gameObject);
+
+        
     }
     private void Start() {
         //smoothMovment null 초기화
@@ -71,12 +73,13 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
         currentGrid = grid.GetNearestPointOnGrid(transform.position);
 
         controller = GetComponent<CharacterController>();
+
+        //위치 초기화
+        transform.position = grid.GetCurrnetGrid(transform.position) + new Vector3(0.001f, 0, 0.001f);//반올림 error 보간값
     }
 
 
     private void Update() {
-        
-
         MoveCtrl();
     }
 
@@ -105,7 +108,7 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
         if (Physics.Raycast(transform.position, moveDirection, out hit, Mathf.Infinity, blockingLayer))
         {
             Debug.DrawRay(transform.position, moveDirection * hit.distance, Color.red);
-            Debug.Log("Did Hit");
+            //Debug.Log("Did Hit");
         }
 
 #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
@@ -154,14 +157,12 @@ if (Input.touchCount > 0)
             //Pass in horizontal and vertical as parameters to specify the direction to move Player in.
             AttemptMove(moveDirection);
         }
-
     }
 
     private void OnCollisionEnter(Collision collision) {
         if(collision.transform.tag == "Wall") {
             
         }
-
     }
 
     private void StopMove()
@@ -170,6 +171,9 @@ if (Input.touchCount > 0)
         try
         {
             StopCoroutine(smoothMovement);
+            playerTurn = false;
+            AttemptMove();
+            print("stopmove");
         }
         catch(Exception ex)
         {
@@ -177,8 +181,7 @@ if (Input.touchCount > 0)
             throw;
         }
             
-        playerTurn = false;
-        print("stopmove");
+        
     }
 
     public Vector3 QueueMove{
@@ -187,29 +190,27 @@ if (Input.touchCount > 0)
         }
         set {
             queueMoveDirection.Enqueue(value);
-            print("asdasd : " + queueMoveDirection);
+            //print("asdasd : " + queueMoveDirection);
         }
     }
-        
-        
 
-    private void AttemptMove(Vector3 moveDirection) {
-        
-        if (queueMoveDirection.Count < queueLimit)
+    private void AttemptMove(Vector3? moveDirection = null) {
+
+        if (queueMoveDirection.Count < queueLimit && moveDirection != null)
         {
             QueueMove = this.moveDirection;
-            print("queueMoveDirection count : " + queueMoveDirection.Count);
-            print("Enqueue : " + this.moveDirection);
+            print("Enqueue : " + queueMoveDirection.Count);
+            //print("queueMoveDirection count : " + queueMoveDirection.Count);
+            //print("Enqueue : " + this.moveDirection);
         }
         if (playerTurn == false && queueMoveDirection.Count != 0)
         {
+            print("Dequeue : " + queueMoveDirection.Count);
             playerTurn = true;
             smoothMovement = SmoothMovement(QueueMove);
             StartCoroutine(smoothMovement);
-            print("start Coroutine");
+            //print("start Coroutine");
         }
-
-        
     }
 
 
@@ -218,62 +219,72 @@ if (Input.touchCount > 0)
         //dir 이 null 이면 리턴
         if (dir == null) yield return null;
         
-        
         while (true)
         {
+            //print("AA : " + Vector3.Distance(transform.position, grid.GetCurrnetGrid(transform.position)));
             if (CheckForward(dir.Value))
             {
-                    Debug.Log("Did Hit");
+                if (Vector3.Distance(transform.position, grid.GetCurrnetGrid(transform.position, dir.Value)) > 0.1f)
+                {
+                    transform.Translate(dir.Value * speed);
+                }
+                else
+                {
+                    CheckForward(dir.Value);
+                    transform.position = grid.GetCurrnetGrid(transform.position,dir.Value) + new Vector3(0.001f, 0, 0.001f);
                     StopMove();
+                    Debug.Log("Did Hit");
+                }
             }
-            //dir 이 null 이 아니면 실행
-            transform.Translate(dir.Value * 0.1f);
+            else
+            {
+                //dir 이 null 이 아니면 실행
+                transform.Translate(dir.Value * speed);
                 //print("SmoothMovement");
-                yield return new WaitForSeconds(0.1f);
+            }
+            yield return null;
 
         }
     }
 
     private bool CheckForward(Vector3 dir)
     {
-
+        //tm.text = Vector3.Distance(transform.position, grid.GetCurrnetGrid(transform.position, dir)) + "\n"
+        //    + transform.position + "\n"
+        //    + grid.GetCurrnetGrid(transform.position, dir) + "\n"
+        //    + grid.GetCurrnetGrid(transform.position, dir) + "\n"
+        //    + grid.GridPositionToArray(grid.GetNextGrid(transform.position, dir)) + "\n"
+        //    + grid.BoolCurrentPosition(grid.GetNextGrid(transform.position, dir)) + "\n";
         try
         {
             //다음 Grid 로 이동했을 시 true
-            if (!grid.BoolCurrentPosition(GetNextGrid(dir)))
+            if (grid.BoolCurrentPosition(grid.GetNextGrid(transform.position, dir)))
             {
-                grid.BoolCurrentPosition(GetCurrnetGrid(), true);
-                print("CheckForward true check");
-                //다음 grid 좌표 bool true로 변경
 
+                //grid.BoolCurrentPosition(grid.GetCurrnetGrid(transform.position), true);
+
+                print("CheckForward true check");
+
+                //다음 grid 좌표 bool true로 변경
                 //currentGrid = GetNextGrid(dir);
                 return true;
             }
             else
             {
+                //grid.BoolCurrentPosition(grid.GetCurrnetGrid(transform.position), false);
                 //print("CheckForward error : " + "currentGrid = " + currentGrid + "GetCurrnetGrid() = " + GetCurrnetGrid());
                 return false;
             }
         }
         catch(Exception ex)
         {
-            print("error");
-            return false;
+            print("error : " + ex);
+            return true;
         }
         
     }
 
-    private Vector3 GetCurrnetGrid()
-    {
-        //print("GetCurrnetGrid : " + grid.GetNearestPointOnGrid(transform.position));
-        return ClientLibrary.Grid.instance.GetNearestPointOnGrid(transform.position);
-    }
 
-    private Vector3 GetNextGrid(Vector3 dir)
-    {
-        //print("GetCurrnetGrid : " + grid.GetNearestPointOnGrid(transform.position + dir));
-        return ClientLibrary.Grid.instance.GetNearestPointOnGrid(transform.position + dir);
-    }
 
 
 }

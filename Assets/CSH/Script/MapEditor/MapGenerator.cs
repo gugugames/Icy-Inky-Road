@@ -11,7 +11,7 @@ public class MapGenerator : MonoBehaviour {
 	public float outlinePercent;
 
 	void Start() {
-		GenerateMap ();
+		//GenerateMap ();
 	}
 
 	public void GenerateMap() {
@@ -29,7 +29,7 @@ public class MapGenerator : MonoBehaviour {
                 Vector3 tilePosition = new Vector3(-mapSize.x / 2 + 0.5f + x, 0, -mapSize.y / 2 + 0.5f + y);
 
                 if (x == -1 || x == mapSize.x || y == -1 || y == mapSize.y) {
-                    GameObject newTile = Instantiate(outWallPrefab, tilePosition + Vector3.up * .5f, Quaternion.Euler(Vector3.right * 90)) as GameObject;
+                    GameObject newTile = Instantiate(outWallPrefab, tilePosition + Vector3.up * .5f, Quaternion.identity) as GameObject;
                     newTile.transform.localScale = Vector3.one * (1 - outlinePercent);
                     newTile.transform.parent = mapHolder;
                 }
