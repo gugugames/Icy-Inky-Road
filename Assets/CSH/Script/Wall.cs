@@ -21,7 +21,7 @@ public class Wall : MonoBehaviour
 
         ClientLibrary.Grid.instance.BoolCurrentPosition(transform.position, true);
 
-        tm.text = ClientLibrary.Grid.instance.GridPositionToArray(transform.position).x + ", " + ClientLibrary.Grid.instance.GridPositionToArray(transform.position).z + "\n" + ClientLibrary.Grid.instance.BoolCurrentPosition(transform.position);
+        //tm.text = ClientLibrary.Grid.instance.GridPositionToArray(transform.position).x + ", " + ClientLibrary.Grid.instance.GridPositionToArray(transform.position).z + "\n" + ClientLibrary.Grid.instance.BoolCurrentPosition(transform.position);
     }
 
 

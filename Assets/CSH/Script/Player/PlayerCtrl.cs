@@ -8,7 +8,7 @@ public class PlayerCtrl : MonoBehaviour
 {
     public int horizontal = 0;     //Used to store the horizontal move direction.
     public int vertical = 0;
-    public int queueLimit=2;
+    public int queueLimit=1;
     public TextMesh tm;
 
     private int inputXDir;
@@ -199,6 +199,7 @@ if (Input.touchCount > 0)
         if (queueMoveDirection.Count < queueLimit && moveDirection != null)
         {
             QueueMove = this.moveDirection;
+            tm.text = PreDirection(this.moveDirection);
             print("Enqueue : " + queueMoveDirection.Count);
             //print("queueMoveDirection count : " + queueMoveDirection.Count);
             //print("Enqueue : " + this.moveDirection);
@@ -211,6 +212,15 @@ if (Input.touchCount > 0)
             StartCoroutine(smoothMovement);
             //print("start Coroutine");
         }
+    }
+
+    private string PreDirection(Vector3 dir)
+    {
+        if (dir.x > 0) return "→";
+        if (dir.x < 0) return "←";
+        if (dir.z > 0) return "↑";
+        if (dir.z < 0) return "↓";
+        return "";
     }
 
 
