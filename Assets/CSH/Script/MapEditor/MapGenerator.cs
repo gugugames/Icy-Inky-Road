@@ -40,9 +40,7 @@ public class MapGenerator : MonoBehaviour {
                     newTile.parent = mapHolder;
 
                 }
-                
             }
 		}
 	}
-
 }
