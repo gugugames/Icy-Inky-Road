@@ -5,12 +5,16 @@ using Photon.Realtime;
 
 public class LobyManager : MonoBehaviourPunCallbacks {
     private string gameVersion = "1";
+    public byte playerNumber = 2;
 
-    // 로드할 씬 이름
-    private string nextScene = "";
+    // 로드할 씬 인덱스
+    private int sceneIndex = 1;
 
     public Text connectionInfoText;
     public Button joinButton;
+
+    // 룸 옵션
+    RoomOptions ros = new RoomOptions();
 
     void Awake()
     {
@@ -66,13 +70,35 @@ public class LobyManager : MonoBehaviourPunCallbacks {
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         connectionInfoText.text = "빈 방이 없음, 새로운 방 생성...";
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 4 });
+
+        ros.MaxPlayers = playerNumber;
+        PhotonNetwork.CreateRoom(null, ros);
+    }
+
+    public void Play()
+    {
+        connectionInfoText.text = "참여 인원 " + PhotonNetwork.PlayerList.Length + "/2 ...";
+
+        if (PhotonNetwork.PlayerList.Length >= 2)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            PhotonNetwork.LoadLevel("MainServer");
+        }
     }
 
     // 룸에 참가 완료된 경우 자동 실행
     public override void OnJoinedRoom()
     {
-        connectionInfoText.text = "방 참가 성공";
-        PhotonNetwork.LoadLevel(nextScene);
+        Play();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Play();
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        connectionInfoText.text = "참여 인원 " + PhotonNetwork.PlayerList.Length + "/2 ...";
     }
 }
