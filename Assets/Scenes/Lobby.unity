@@ -391,9 +391,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 941648516}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92e67fc7af87b3c4b851c670cff11605, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f84d057c370ab04b97b80c8785e0e00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerNumber: 2
   connectionInfoText: {fileID: 914201805}
   joinButton: {fileID: 1454203916}
 --- !u!1 &1022234460
@@ -702,7 +703,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 941648518}
-        m_MethodName: OnJoinedRoom
+        m_MethodName: Connect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
