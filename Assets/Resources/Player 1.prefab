@@ -40,13 +40,12 @@ GameObject:
   - component: {fileID: 33902474600405134}
   - component: {fileID: 23924491309848448}
   - component: {fileID: 65185444561453966}
-  - component: {fileID: 114884157944484924}
-  - component: {fileID: 114603568713698028}
-  - component: {fileID: 143175506212924446}
   - component: {fileID: 114611028523527168}
   - component: {fileID: 114672881337496302}
+  - component: {fileID: 114923352302430318}
+  - component: {fileID: 114053185967384062}
   m_Layer: 10
-  m_Name: Player
+  m_Name: Player 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,7 +194,7 @@ TextMesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731126391004876}
-  m_Text: "\u2191"
+  m_Text: direction
   m_OffsetZ: 0
   m_CharacterSize: 0.41
   m_LineSpacing: 1
@@ -209,6 +208,25 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4278190080
+--- !u!114 &114053185967384062
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1777467480602412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee74fec87e93d3343b82215a57c02787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  horizontal: 0
+  vertical: 0
+  queueLimit: 1
+  tm: {fileID: 102088727372804498, guid: 677e20579d8e1254ebe4cc5d6aa437da, type: 2}
+  blockingLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  speed: 0.1
 --- !u!114 &114263520712460128
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -232,25 +250,6 @@ MonoBehaviour:
     splatRandomRotation: 180
     splatChannel: 0
   RandomChannel: 0
---- !u!114 &114603568713698028
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1777467480602412}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f94c2df00b6e9d4098674cb8b33bc16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buildableSurfacesLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  blockTemplatePrefab: {fileID: 1856744570630942, guid: 0e53df7c59335e446bebb8ce6a6d9420,
-    type: 2}
-  blockPrefab: {fileID: 1876210472984152, guid: 34af4eee2a83f9749991148c06c68eb9,
-    type: 2}
-  templateMaterial: {fileID: 2100000, guid: f1ba99b3e08a11c4cbb26a99f46d1464, type: 2}
 --- !u!114 &114611028523527168
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -286,7 +285,7 @@ MonoBehaviour:
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 0
   m_SynchronizeScale: 0
---- !u!114 &114884157944484924
+--- !u!114 &114923352302430318
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -294,17 +293,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1777467480602412}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee74fec87e93d3343b82215a57c02787, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f94c2df00b6e9d4098674cb8b33bc16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horizontal: 0
-  vertical: 0
-  queueLimit: 1
-  tm: {fileID: 102088727372804498}
-  blockingLayer:
+  buildableSurfacesLayer:
     serializedVersion: 2
-    m_Bits: 0
-  speed: 0.1
+    m_Bits: 4294967295
+  blockTemplatePrefab: {fileID: 1856744570630942, guid: 0e53df7c59335e446bebb8ce6a6d9420,
+    type: 2}
+  blockPrefab: {fileID: 1876210472984152, guid: 34af4eee2a83f9749991148c06c68eb9,
+    type: 2}
+  templateMaterial: {fileID: 2100000, guid: f1ba99b3e08a11c4cbb26a99f46d1464, type: 2}
 --- !u!114 &114971971154801672
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -317,23 +316,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   range: 10
---- !u!143 &143175506212924446
-CharacterController:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1777467480602412}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 1
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!198 &198591159023663134
 ParticleSystem:
   m_ObjectHideFlags: 1

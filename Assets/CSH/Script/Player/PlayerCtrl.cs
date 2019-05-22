@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 using ClientLibrary;
 
-public class PlayerCtrl : MonoBehaviour
+public class PlayerCtrl : MonoBehaviourPun
 {
     public int horizontal = 0;     //Used to store the horizontal move direction.
     public int vertical = 0;
@@ -16,7 +17,6 @@ public class PlayerCtrl : MonoBehaviour
 
 
     private BoxCollider boxCollider;      //The BoxCollider2D component attached to this object.
-    private Rigidbody rigidbody;               //The Rigidbody2D component attached to this object.
     private CharacterController controller;
 
     public LayerMask blockingLayer;         //Layer on which collision will be checked.
@@ -31,8 +31,7 @@ public class PlayerCtrl : MonoBehaviour
 #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
 private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
 #endif
-
-    public static PlayerCtrl instance = null;
+    //public static PlayerCtrl instance = null;
 
     public Vector3 Position
     {
@@ -43,7 +42,7 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
     void Awake() {
         //Check if instance already exists
-        if (instance == null)
+        /*if (instance == null)
 
             //if not, set instance to this
             instance = this;
@@ -52,35 +51,46 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
         else if (instance != this)
 
             //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
-            Destroy(gameObject);
+            Destroy(gameObject);*/
 
         
     }
     private void Start() {
-        //smoothMovment null 초기화
-        smoothMovement = SmoothMovement(null);
-        
-        //Get a component reference to this object's BoxCollider2D
-        boxCollider = GetComponent<BoxCollider>();
+        if (!photonView.IsMine)
+        {
+            return;
+        }
+        else
+        {
+            //smoothMovment null 초기화
+            smoothMovement = SmoothMovement(null);
 
-        //Get a component reference to this object's Rigidbody2D
-        rigidbody = GetComponent<Rigidbody>();
+            //Get a component reference to this object's BoxCollider2D
+            boxCollider = GetComponent<BoxCollider>();
 
-        //grid 초기화
-        grid = ClientLibrary.Grid.instance;
+            //grid 초기화
+            grid = ClientLibrary.Grid.instance;
 
-        //currentGrid 초기화
-        currentGrid = grid.GetNearestPointOnGrid(transform.position);
+            //currentGrid 초기화
+            currentGrid = grid.GetNearestPointOnGrid(transform.position);
 
-        controller = GetComponent<CharacterController>();
+            controller = GetComponent<CharacterController>();
 
-        //위치 초기화
-        transform.position = grid.GetCurrnetGrid(transform.position) + new Vector3(0.001f, 0, 0.001f);//반올림 error 보간값
+            //위치 초기화
+            transform.position = grid.GetCurrnetGrid(transform.position) + new Vector3(0.001f, 0, 0.001f);//반올림 error 보간값
+        }
     }
 
 
     private void Update() {
-        MoveCtrl();
+        if (!photonView.IsMine)
+        {
+            return;
+        }
+        else
+        {
+            MoveCtrl();
+        }
     }
 
 
@@ -91,7 +101,7 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
         //Check if we are running either in the Unity editor or in a standalone build.
 #if UNITY_STANDALONE || UNITY_WEBPLAYER
-
+   
         //Get input from the input manager, round it to an integer and store in horizontal to set x axis move direction
         moveDirection.x = (int)(Input.GetAxisRaw("Horizontal"));
 

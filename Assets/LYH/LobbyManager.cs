@@ -19,7 +19,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        Screen.SetResolution(1920, 1080, false);
+        //Screen.SetResolution(1920, 1080, false);
     }
 
     void Start()
@@ -42,13 +42,15 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         connectionInfoText.text = "온라인 : 마스터 서버와 연결됨";
     }
 
-    // 마스터 서버 접속 실패 시 자동 실행
+#if UNITY_ANDROID
+// 마스터 서버 접속 실패 시 자동 실행
     public override void OnDisconnected(DisconnectCause cause)
     {
         joinButton.interactable = false;
         connectionInfoText.text = "오프라인 : 마스터 서버와 연결되지 않음\n 접속 재시도 중...";
-        // PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.ConnectUsingSettings();
     }
+#endif
 
     // 룸 접속 시도
     public void Connect()
@@ -78,12 +80,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void Play()
     {
-        connectionInfoText.text = "참여 인원 " + PhotonNetwork.PlayerList.Length + "/2 ...";
+        connectionInfoText.text = "참여 인원 " + PhotonNetwork.PlayerList.Length + "/" + playerNumber + "...";
 
-        if (PhotonNetwork.PlayerList.Length >= 2)
+        if (PhotonNetwork.PlayerList.Length >= playerNumber)
         {
             PhotonNetwork.CurrentRoom.IsOpen = false;
-            PhotonNetwork.LoadLevel("MainServer");
+            PhotonNetwork.LoadLevel(sceneIndex);
         }
     }
 
@@ -100,6 +102,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        connectionInfoText.text = "참여 인원 " + PhotonNetwork.PlayerList.Length + "/2 ...";
+        connectionInfoText.text = "참여 인원 " + PhotonNetwork.PlayerList.Length + "/" + playerNumber + "...";
     }
 }

@@ -92,6 +92,7 @@ namespace Photon.Pun.Demo.Asteroids
                 object[] instantiationData = {force, torque, true};
 
                 PhotonNetwork.InstantiateSceneObject("BigAsteroid", position, Quaternion.Euler(Random.value * 360.0f, Random.value * 360.0f, Random.value * 360.0f), 0, instantiationData);
+                Debug.Log("aa");
             }
         }
 
@@ -179,6 +180,7 @@ namespace Photon.Pun.Demo.Asteroids
             if (PhotonNetwork.IsMasterClient)
             {
                 StartCoroutine(SpawnAsteroid());
+                Debug.Log("1");
             }
         }
 

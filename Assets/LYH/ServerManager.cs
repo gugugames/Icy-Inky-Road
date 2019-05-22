@@ -39,13 +39,10 @@ public class ServerManager : MonoBehaviourPunCallbacks, IPunObservable
     // 게임 시작과 동시에 플레이어가 될 게임 오브젝트를 생성
     private void Start()
     {
-        // 생성할 랜덤 위치 지정
-        Vector3 randomSpawnPos = Random.insideUnitSphere * 5f;
-        PhotonNetwork.Instantiate(playerPrefab.name, randomSpawnPos, Quaternion.identity);
         // 네트워크 상의 모든 클라이언트들에서 생성 실행
         // 단, 해당 게임 오브젝트의 주도권은, 생성 메서드를 직접 실행한 클라이언트에게 있음
 
-        /*if (photonView.IsMine)
+        if (photonView.IsMine)
         {
             Debug.Log("IsMine");
             Vector3 SpawnPos1 = new Vector3(4.5f, 0.5f, 4.5f);
@@ -58,7 +55,7 @@ public class ServerManager : MonoBehaviourPunCallbacks, IPunObservable
             Vector3 SpawnPos2 = new Vector3(-4.5f, 0.5f, -4.5f);
 
             PhotonNetwork.Instantiate(playerPrefab.name, SpawnPos2, Quaternion.identity);
-        }*/
+        }
     }
 
     // 주기적으로 자동 실행되는, 동기화 메서드
