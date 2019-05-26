@@ -14,6 +14,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class UIButtonStyle : UIStyle {
 
+    public UIButtonStyleData styleData;
+    
     private Button button;
     private Image image;
 
@@ -34,17 +36,10 @@ public class UIButtonStyle : UIStyle {
         image = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
 
-        // Button transition, targetGraphic, navigation, spriteState 설정
-        button.transition = Selectable.Transition.SpriteSwap;
-        button.targetGraphic = image;
-        
-        Navigation temp = new Navigation { mode = Navigation.Mode.None }; 
+        Navigation temp = new Navigation { mode = Navigation.Mode.None };
         button.navigation = temp; // navigation mode를 None으로 해야만 의도한 결과를 얻는다.
 
-        button.spriteState = styleData.buttonSpriteState;
-
         // Image sprite, type 설정
-        image.sprite = styleData.normalSprite;
         image.type = Image.Type.Sliced;
         
         // RectTransform width, height 설정

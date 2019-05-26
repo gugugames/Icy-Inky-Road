@@ -1,9 +1,9 @@
 ﻿/**
  * UIStyleData.cs
  * 
- * UI 요소에 적용되는 Style을 정의한다.
- * Project window에서 "Create/UI/UI Style Data"를 통해
- * UIStyleData Scriptable Object를 Editor 상에서 만들 수 있다. 
+ * UI Button 요소에 적용되는 Style을 정의한다.
+ * Project window에서 "Create/UI/UI Button Style Data"를 통해
+ * UIButtonStyleData Scriptable Object를 Editor 상에서 만들 수 있다. 
  *
  * 같은 style을 공유하는 UI 요소들을 한번에 제어하고 싶을 때 편리하게 사용 가능하다.
  * 
@@ -17,12 +17,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[CreateAssetMenu(menuName = "UI/UI Style Data")]
-public class UIStyleData : ScriptableObject
+[CreateAssetMenu(menuName = "UI/UI Button Style Data")]
+public class UIButtonStyleData : ScriptableObject
 {
-    public Sprite normalSprite; // normal sprite
-    public SpriteState buttonSpriteState; // highlighted, pressed, disabled sprite
-
     public Vector2 sizeDelta; // RectTransform width, height
 
     // Icon data

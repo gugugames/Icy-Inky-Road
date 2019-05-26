@@ -13,8 +13,7 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 public class UIStyle : MonoBehaviour {
-    public UIStyleData styleData;
-    
+
     protected virtual void OnStyleUI()
     {
          
