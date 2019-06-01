@@ -5,8 +5,20 @@ using UnityEngine;
 using Photon.Pun;
 using ClientLibrary;
 
+
+
 public class PlayerCtrl : MonoBehaviourPun
 {
+    public enum PlayerTeam
+    {
+        A,
+        B
+    }
+
+    //플레이 시작시 설정해야하는 값
+    //기본 A
+    public PlayerTeam playerTeam = PlayerTeam.A;
+
     public int horizontal = 0;     //Used to store the horizontal move direction.
     public int vertical = 0;
     public int queueLimit=1;
@@ -77,7 +89,7 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
             controller = GetComponent<CharacterController>();
 
             //위치 초기화
-            transform.position = grid.GetCurrnetGrid(transform.position) + new Vector3(0.001f, 0, 0.001f);//반올림 error 보간값
+            transform.position = grid.GetCurrentGrid(transform.position) + new Vector3(0.001f, 0, 0.001f);//반올림 error 보간값
         }
     }
 
@@ -244,14 +256,14 @@ if (Input.touchCount > 0)
             //print("AA : " + Vector3.Distance(transform.position, grid.GetCurrnetGrid(transform.position)));
             if (CheckForward(dir.Value))
             {
-                if (Vector3.Distance(transform.position, grid.GetCurrnetGrid(transform.position, dir.Value)) > 0.1f)
+                if (Vector3.Distance(transform.position, grid.GetCurrentGrid(transform.position, dir.Value)) > 0.1f)
                 {
                     transform.Translate(dir.Value * speed);
                 }
                 else
                 {
                     CheckForward(dir.Value);
-                    transform.position = grid.GetCurrnetGrid(transform.position,dir.Value) + new Vector3(0.001f, 0, 0.001f);
+                    transform.position = grid.GetCurrentGrid(transform.position,dir.Value) + new Vector3(0.001f, 0, 0.001f);
                     StopMove();
                     Debug.Log("Did Hit");
                 }
@@ -280,7 +292,7 @@ if (Input.touchCount > 0)
         try
         {
             //다음 Grid 로 이동했을 시 true
-            if (grid.BoolCurrentPosition(grid.GetNextGrid(transform.position, dir)))
+            if (grid.GetSetBoolCurrentPosition(grid.GetNextGrid(transform.position, dir)))
             {
 
                 //grid.BoolCurrentPosition(grid.GetCurrnetGrid(transform.position), true);

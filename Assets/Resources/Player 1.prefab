@@ -219,6 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee74fec87e93d3343b82215a57c02787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTeam: 0
   horizontal: 0
   vertical: 0
   queueLimit: 1

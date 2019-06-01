@@ -195,7 +195,7 @@ TextMesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731126391004876}
-  m_Text: "\u2191"
+  m_Text: "\u2193"
   m_OffsetZ: 0
   m_CharacterSize: 0.41
   m_LineSpacing: 1
@@ -297,6 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee74fec87e93d3343b82215a57c02787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTeam: 0
   horizontal: 0
   vertical: 0
   queueLimit: 1

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walls:
   - Name: wall1
-    ID: 0
+    ID: 1
     wallPrefab: {fileID: 1876210472984152, guid: 34af4eee2a83f9749991148c06c68eb9,
       type: 2}
   - Name: wall2
-    ID: 1
+    ID: 2
     wallPrefab: {fileID: 1740451722650890, guid: 2f524cba0c4b1084baaf30f178b16e1a,
       type: 2}

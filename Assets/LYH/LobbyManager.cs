@@ -2,9 +2,13 @@
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
+
+    public InputField playerNumberInputField;
+
     private string gameVersion = "1";
     public byte playerNumber = 2;
 
@@ -33,6 +37,20 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         joinButton.interactable = false;
         // 접속 시도 중임을 텍스트로 표시
         connectionInfoText.text = "마스터 서버에 접속 중...";
+    }
+
+    public void SetPlayerNumber()
+    {
+        //print(playerNumberInputField.text);
+        try
+        {
+            playerNumber = (byte)int.Parse(playerNumberInputField.text);
+
+        }catch(Exception e)
+        {
+            Debug.Log(e);
+            playerNumber = 1;
+        }
     }
 
     // 마스터 서버 접속 성공 시 자동 실행

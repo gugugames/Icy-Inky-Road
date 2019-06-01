@@ -9,7 +9,7 @@ namespace ClientLibrary
         [SerializeField]
         private int size = 1;
         public static Grid instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
-        public int mapSize = 10;
+        public int mapSize = 12;
         public bool[,] mapArray;
         public string[,] shareArray;
 
@@ -23,10 +23,10 @@ namespace ClientLibrary
             if (instance == null)
             {
                 //position array
-                SetMapArray();
+                InitMapArray();
 
                 //grid 점유율
-                SetMapShareArray();
+                InitMapShareArray();
 
                 //if not, set instance to this
                 instance = this;
@@ -78,7 +78,8 @@ namespace ClientLibrary
             }
         }
 
-        public void SetMapArray()
+        
+        public void InitMapArray()
         {
             mapArray = new bool[mapSize,mapSize];
             for (int x = 0; x < mapSize; x += size)
@@ -92,7 +93,8 @@ namespace ClientLibrary
             print("setmap done");
         }
 
-        public void SetMapShareArray()
+        //Map 점유율 초기화
+        public void InitMapShareArray()
         {
             shareArray = new string[mapSize, mapSize];
             for (int x = 0; x < mapSize; x += size)
@@ -106,6 +108,15 @@ namespace ClientLibrary
             print("setmap done");
         }
 
+        //Map 점유율
+        //PlayerCtrl의 PlayerTeam enum 값으로 처리함
+        public void SetMapShareArray(Vector3 position, PlayerCtrl.PlayerTeam playerTeam)
+        {
+            Vector3 gridPosition = GridPositionToArray(position);
+            shareArray[(int)gridPosition.x, (int)gridPosition.z] = playerTeam.ToString();
+            print("set map share array : " + shareArray[(int)gridPosition.x, (int)gridPosition.z]);
+        }
+
         public Vector3 GridPositionToArray(Vector3 position)
         {
             //print("AAAA : " + (position.x + (mapSize / 2) - 0.5f));
@@ -114,7 +125,7 @@ namespace ClientLibrary
                 position.z + (mapSize / 2) - 0.5f);
         }
 
-        public Vector3 GetCurrnetGrid(Vector3 position, Vector3? dir = null)
+        public Vector3 GetCurrentGrid(Vector3 position, Vector3? dir = null)
         {
             //print("GetCurrnetGrid : " + grid.GetNearestPointOnGrid(transform.position));
             return GetNearestPointOnGrid(position);
@@ -127,7 +138,7 @@ namespace ClientLibrary
         }
 
         //나중에 두 메서드 합쳐야함 BoolCurrentPosition, GridShare
-        public bool BoolCurrentPosition(Vector3 position, bool? setBool = null)
+        public bool GetSetBoolCurrentPosition(Vector3 position, bool? setBool = null)
         {
             //print("AA");
             Vector3 gridPosition = GridPositionToArray(position);
@@ -137,33 +148,34 @@ namespace ClientLibrary
             return mapArray[(int)gridPosition.x, (int)gridPosition.z];
         }
 
-        public string GridShare(Vector3 position, string shareTeam = null)
+        //map에 object가 있는지 bool 값으로 체크 (true: object 존재, false object 없음)
+        public string SetGridShare(Vector3 position, string shareTeam = null)
         {
             //print("AA");
             Vector3 gridPosition = GridPositionToArray(position);
 
 
             //점유 되어있는 곳이 없고 B가 점유를 할 예정일때
-            if (GridShare(position) == null && shareTeam == "B")
+            if (SetGridShare(position) == null && shareTeam == "B")
             {
                 //B의 점수를 올린다.
                 sharePointB++;
             }
             //점유 되어있는 곳이 없고 A가 점유를 할 예정일때
-            else if (GridShare(position) == null && shareTeam == "A")
+            else if (SetGridShare(position) == null && shareTeam == "A")
             {
                 //A의 점수를 올린다.
                 sharePointA++;
             }
             //점유 되어있는 곳이 A이고 B가 점유를 할 예정일때
-            else if (GridShare(position) == "A" && shareTeam == "B")
+            else if (SetGridShare(position) == "A" && shareTeam == "B")
             {
                 //B의 점수를 올리고 A점수를 낮춘다.
                 sharePointA--;
                 sharePointB++;
             }
             //점유 되어있는 곳이 B이고 A가 점유를 할 예정일때
-            else if (GridShare(position) == "B" && shareTeam == "A")
+            else if (SetGridShare(position) == "B" && shareTeam == "A")
             {
                 //A의 점수를 올리고 B점수를 낮춘다.
                 sharePointA++;
@@ -188,7 +200,7 @@ namespace ClientLibrary
 
         public string GetShare(Vector3 position)
         {
-            return GridShare(position);
+            return SetGridShare(position);
         }
 
         public void SetShare(bool whoGetPoint)
