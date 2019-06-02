@@ -52,7 +52,6 @@ namespace ClientLibrary
         }
         Vector3 temp;
         private void Update() {
-
             if (!photonView.IsMine)
             {
                 return;

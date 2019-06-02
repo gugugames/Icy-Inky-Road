@@ -17,9 +17,16 @@ public class WallSelector : MonoBehaviour
     //public SelectWall selectedWall = SelectWall.select;
     //private WallInfo[] wallInfo;
     private GameObject currentWall;
+    public TextMesh tm;
 
     [HideInInspector]
     public int currentId;
+
+    private void Update()
+    {
+        //tm.text = ClientLibrary.Grid.instance.GetMapShareArray(transform.position) + "\n"+
+        //    ClientLibrary.Grid.instance.GetSetBoolWallPosition(transform.position);
+    }
 
     public int SetWall(int WallId) {
         if (WallId == 0 && currentWall != null) {

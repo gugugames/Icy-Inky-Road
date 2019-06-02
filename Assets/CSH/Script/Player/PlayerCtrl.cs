@@ -193,9 +193,10 @@ if (Input.touchCount > 0)
         try
         {
             StopCoroutine(smoothMovement);
+
             playerTurn = false;
             AttemptMove();
-            print("stopmove");
+            //print("stopmove");
         }
         catch(Exception ex)
         {
@@ -222,13 +223,13 @@ if (Input.touchCount > 0)
         {
             QueueMove = this.moveDirection;
             tm.text = PreDirection(this.moveDirection);
-            print("Enqueue : " + queueMoveDirection.Count);
+            //print("Enqueue : " + queueMoveDirection.Count);
             //print("queueMoveDirection count : " + queueMoveDirection.Count);
             //print("Enqueue : " + this.moveDirection);
         }
         if (playerTurn == false && queueMoveDirection.Count != 0)
         {
-            print("Dequeue : " + queueMoveDirection.Count);
+            //print("Dequeue : " + queueMoveDirection.Count);
             playerTurn = true;
             smoothMovement = SmoothMovement(QueueMove);
             StartCoroutine(smoothMovement);
@@ -258,6 +259,7 @@ if (Input.touchCount > 0)
             {
                 if (Vector3.Distance(transform.position, grid.GetCurrentGrid(transform.position, dir.Value)) > 0.1f)
                 {
+                    
                     transform.Translate(dir.Value * speed);
                 }
                 else
@@ -265,11 +267,23 @@ if (Input.touchCount > 0)
                     CheckForward(dir.Value);
                     transform.position = grid.GetCurrentGrid(transform.position,dir.Value) + new Vector3(0.001f, 0, 0.001f);
                     StopMove();
-                    Debug.Log("Did Hit");
+                    grid.GetSetBoolPlayerOcuupationPosition(transform.position, true);
+                    grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), false);
+                    //Debug.Log("Did Hit");
                 }
             }
             else
             {
+                //print("AA");
+
+                grid.GetSetBoolPlayerOcuupationPosition(transform.position, true);
+                if(grid.CheckWallPosition(grid.GetPreviousGrid(transform.position, dir.Value)) == false)
+                {
+                    //print("AA : " + grid.CheckWallPosition(grid.GetPreviousGrid(transform.position, dir.Value)));
+                    grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), false);
+
+                }
+                grid.SetMapShareArray(transform.position, playerTeam);
                 //dir 이 null 이 아니면 실행
                 transform.Translate(dir.Value * speed);
                 //print("SmoothMovement");
@@ -292,12 +306,13 @@ if (Input.touchCount > 0)
         try
         {
             //다음 Grid 로 이동했을 시 true
-            if (grid.GetSetBoolCurrentPosition(grid.GetNextGrid(transform.position, dir)))
+            if (grid.GetSetBoolWallPosition(grid.GetNextGrid(transform.position, dir)) || 
+                grid.GetSetBoolPlayerOcuupationPosition(grid.GetNextGrid(transform.position, dir)))
             {
 
                 //grid.BoolCurrentPosition(grid.GetCurrnetGrid(transform.position), true);
 
-                print("CheckForward true check");
+                //print("CheckForward true check");
 
                 //다음 grid 좌표 bool true로 변경
                 //currentGrid = GetNextGrid(dir);
@@ -306,7 +321,7 @@ if (Input.touchCount > 0)
             else
             {
                 //grid.BoolCurrentPosition(grid.GetCurrnetGrid(transform.position), false);
-                //print("CheckForward error : " + "currentGrid = " + currentGrid + "GetCurrnetGrid() = " + GetCurrnetGrid());
+                //print("CheckForward error : " + "currentGrid = " + currentGrid);
                 return false;
             }
         }

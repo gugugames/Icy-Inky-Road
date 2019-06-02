@@ -24,6 +24,11 @@ public class LobbyUIManager : MonoBehaviour {
             Destroy(gameObject);
     }
 
+    public void GetMaxUser()
+    {
+
+    }
+
     // Use this for initialization
     void Start () {
 		

@@ -11,6 +11,7 @@ namespace ClientLibrary
         public static Grid instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
         public int mapSize = 12;
         public bool[,] mapArray;
+        public bool[,] playerOccupationArray;
         public string[,] shareArray;
 
         private int sharePointA = 0;
@@ -27,6 +28,9 @@ namespace ClientLibrary
 
                 //grid 점유율
                 InitMapShareArray();
+
+                //player 점유 위치
+                InitPlayerOccupationArray();
 
                 //if not, set instance to this
                 instance = this;
@@ -90,7 +94,21 @@ namespace ClientLibrary
                 }
 
             }
-            print("setmap done");
+            print("InitMapArray done");
+        }
+
+        public void InitPlayerOccupationArray()
+        {
+            playerOccupationArray = new bool[mapSize, mapSize];
+            for (int x = 0; x < mapSize; x += size)
+            {
+                for (int z = 0; z > mapSize; z += size)
+                {
+                    playerOccupationArray[x, z] = false;
+                }
+
+            }
+            print("InitMapArray done");
         }
 
         //Map 점유율 초기화
@@ -105,7 +123,7 @@ namespace ClientLibrary
                 }
 
             }
-            print("setmap done");
+            print("InitMapShareArray done");
         }
 
         //Map 점유율
@@ -113,8 +131,24 @@ namespace ClientLibrary
         public void SetMapShareArray(Vector3 position, PlayerCtrl.PlayerTeam playerTeam)
         {
             Vector3 gridPosition = GridPositionToArray(position);
-            shareArray[(int)gridPosition.x, (int)gridPosition.z] = playerTeam.ToString();
-            print("set map share array : " + shareArray[(int)gridPosition.x, (int)gridPosition.z]);
+            if (shareArray[(int)gridPosition.x, (int)gridPosition.z] == playerTeam.ToString())
+            {
+                //return;
+            }
+            else
+            {
+                shareArray[(int)gridPosition.x, (int)gridPosition.z] = playerTeam.ToString();
+                print("set map share array : " + shareArray[(int)gridPosition.x, (int)gridPosition.z]);
+
+            }
+
+            //CalculateShare(position, playerTeam);
+        }
+
+        public string GetMapShareArray(Vector3 position)
+        {
+            Vector3 gridPosition = GridPositionToArray(position);
+            return shareArray[(int)gridPosition.x, (int)gridPosition.z];
         }
 
         public Vector3 GridPositionToArray(Vector3 position)
@@ -123,6 +157,11 @@ namespace ClientLibrary
             return new Vector3(position.x + (mapSize / 2) - 0.5f, 
                 position.y,
                 position.z + (mapSize / 2) - 0.5f);
+        }
+
+        public Vector2 GridArrayToPosition(int x, int y)
+        {
+            return new Vector2((-mapSize / 2 - 0.5f) + x, (-mapSize / 2 - 0.5f) + y); ;
         }
 
         public Vector3 GetCurrentGrid(Vector3 position, Vector3? dir = null)
@@ -137,10 +176,14 @@ namespace ClientLibrary
             return GetNearestPointOnGrid(position + dir);
         }
 
-        //나중에 두 메서드 합쳐야함 BoolCurrentPosition, GridShare
-        public bool GetSetBoolCurrentPosition(Vector3 position, bool? setBool = null)
+        public Vector3 GetPreviousGrid(Vector3 position, Vector3 dir)
         {
-            //print("AA");
+            return GetNearestPointOnGrid(position - dir);
+        }
+
+        //나중에 두 메서드 합쳐야함 BoolCurrentPosition, GridShare
+        public bool GetSetBoolWallPosition(Vector3 position, bool? setBool = null)
+        {
             Vector3 gridPosition = GridPositionToArray(position);
             if (setBool != null)
                 mapArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
@@ -148,48 +191,79 @@ namespace ClientLibrary
             return mapArray[(int)gridPosition.x, (int)gridPosition.z];
         }
 
+        public bool GetSetBoolPlayerOcuupationPosition(Vector3 position, bool? setBool = null)
+        {
+            Vector3 gridPosition = GridPositionToArray(position);
+            if (setBool != null)
+            {
+                //점수 계산부분
+                if (playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] == false && setBool == true)
+                    CalculateShare(position);
+                playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
+                
+            }
+            //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
+            return playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z];
+        }
+
+        //입력된 position위에 있는 object가 wall 인지 아닌지 체크
+        public bool CheckWallPosition(Vector3 position)
+        {
+            Vector2 temp1 = GridArrayToPosition(0, 0);
+            Vector2 temp2 = GridArrayToPosition(mapSize+1, mapSize+1);
+            //print("temp1 : " + temp1 + "position : " + position);
+            if (position.x <= temp1.x|| position.x == temp2.x 
+                || position.y == temp1.y || position.y == temp2.y)
+            {
+                return true;
+            }
+            return false;
+        }
+
         //map에 object가 있는지 bool 값으로 체크 (true: object 존재, false object 없음)
-        public string SetGridShare(Vector3 position, string shareTeam = null)
+        public string CalculateShare(Vector3 position, PlayerCtrl.PlayerTeam playerTeam = PlayerCtrl.PlayerTeam.A)
         {
             //print("AA");
+            //Vector3 gridPosition = GridPositionToArray(position);
             Vector3 gridPosition = GridPositionToArray(position);
+            string occupation = shareArray[(int)gridPosition.x, (int)gridPosition.z];
 
 
             //점유 되어있는 곳이 없고 B가 점유를 할 예정일때
-            if (SetGridShare(position) == null && shareTeam == "B")
+            if (occupation == null && playerTeam == PlayerCtrl.PlayerTeam.B)
             {
                 //B의 점수를 올린다.
                 sharePointB++;
             }
             //점유 되어있는 곳이 없고 A가 점유를 할 예정일때
-            else if (SetGridShare(position) == null && shareTeam == "A")
+            else if (occupation == null && playerTeam == PlayerCtrl.PlayerTeam.A)
             {
                 //A의 점수를 올린다.
                 sharePointA++;
             }
             //점유 되어있는 곳이 A이고 B가 점유를 할 예정일때
-            else if (SetGridShare(position) == "A" && shareTeam == "B")
+            else if (occupation == "A" && playerTeam == PlayerCtrl.PlayerTeam.B)
             {
                 //B의 점수를 올리고 A점수를 낮춘다.
                 sharePointA--;
                 sharePointB++;
             }
             //점유 되어있는 곳이 B이고 A가 점유를 할 예정일때
-            else if (SetGridShare(position) == "B" && shareTeam == "A")
+            else if (occupation == "B" && playerTeam == PlayerCtrl.PlayerTeam.A)
             {
                 //A의 점수를 올리고 B점수를 낮춘다.
                 sharePointA++;
                 sharePointB--;
             }
-            
 
-            if (shareTeam != null)
-            {
-                shareArray[(int)gridPosition.x, (int)gridPosition.z] = shareTeam;
-                print(GetShareText() + "");
-            }
+
+            //if (shareTeam != null)
+            //{
+            //    shareArray[(int)gridPosition.x, (int)gridPosition.z] = shareTeam;
+            //    print(GetShareText() + "");
+            //}
             //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
-
+            print("calculate current share point : " + sharePointA +" , " +  sharePointB);
             return shareArray[(int)gridPosition.x, (int)gridPosition.z];
         }
         
@@ -200,7 +274,7 @@ namespace ClientLibrary
 
         public string GetShare(Vector3 position)
         {
-            return SetGridShare(position);
+            return CalculateShare(position);
         }
 
         public void SetShare(bool whoGetPoint)
