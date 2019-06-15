@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 
 namespace ClientLibrary
 {
@@ -38,6 +39,10 @@ namespace ClientLibrary
         Vector3 dragPosition;
         Vector3 initPlayerPosition;
 
+        public Button tempButton1;
+        public Button tempButton2;
+
+
         private void Start() {
             if (!photonView.IsMine)
             {
@@ -45,11 +50,52 @@ namespace ClientLibrary
             }
             else
             {
+                tempButton1 = GameObject.Find("Canvas/Button").transform.GetComponent<Button>();
+                tempButton2 = GameObject.Find("Canvas/Button (1)").transform.GetComponent<Button>();
+                tempButton1.onClick.AddListener(() => StartBuildingMode());
+                tempButton2.onClick.AddListener(() => PlaceBlock());
+                
                 grid = FindObjectOfType<Grid>();
                 bSys = GetComponent<BlockSystem>();
                 playerCamera = FindObjectOfType<Camera>();
             }
         }
+
+        public void StartBuildingMode()
+        {
+#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+            buildModeOn = !buildModeOn;
+
+                if (buildModeOn)
+                {
+                    canBuild = true;
+                    //Cursor.lockState = CursorLockMode.Locked;
+                }
+                else
+                {
+                    canBuild = false;
+                    Cursor.lockState = CursorLockMode.None;
+                }
+#endif
+#if UNITY_EDITOR || UNITY_EDITOR_WIN || UNITY_STANDALONE || UNITY_WEBPLAYER
+            if (Input.GetKeyDown("e"))
+            {
+                buildModeOn = !buildModeOn;
+
+                if (buildModeOn)
+                {
+                    canBuild = true;
+                    //Cursor.lockState = CursorLockMode.Locked;
+                }
+                else
+                {
+                    canBuild = false;
+                    Cursor.lockState = CursorLockMode.None;
+                }
+            }
+#endif
+        }
+
         Vector3 temp;
         private void Update() {
             if (!photonView.IsMine)
@@ -59,21 +105,7 @@ namespace ClientLibrary
             else
             {
                 //E버튼 클릭시 빌딩 모드 실행, 다시 E 클릭시 빌딩모드 해제
-                if (Input.GetKeyDown("e"))
-                {
-                    buildModeOn = !buildModeOn;
-
-                    if (buildModeOn)
-                    {
-                        canBuild = true;
-                        //Cursor.lockState = CursorLockMode.Locked;
-                    }
-                    else
-                    {
-                        canBuild = false;
-                        Cursor.lockState = CursorLockMode.None;
-                    }
-                }
+                StartBuildingMode();
 
                 if (Input.GetKeyDown("r"))
                 {
@@ -109,7 +141,7 @@ namespace ClientLibrary
                 }
 
                 //Block 템플릿 실행
-                if (Input.GetKeyDown("e") && currentTemplateBlock == null)
+                if (buildModeOn && currentTemplateBlock == null)
                 {
                     //이부분이 빌딩모드때 보이는 가상 블락 실행부분
                     currentTemplateBlock = Instantiate(blockTemplatePrefab, PlaceCubeNear(buildPos), Quaternion.identity);
@@ -141,6 +173,7 @@ namespace ClientLibrary
                     //버튼 땠을때 드래그 감지 해제
                     if (Input.GetMouseButtonUp(0))
                     {
+                        currentTemplateBlock.transform.position = dragPosition;
                         isDrag = false;
                         print("BB");
                     }
@@ -149,9 +182,9 @@ namespace ClientLibrary
                     {
                         //클릭다운된 좌표와 클릭업 된 좌표의 값을 빼서 임의의 값으로 나누어 currentTemplateBlock에 더해줌
                         dragPosition = PlaceCubeNear(new Vector3(
-                            initPlayerPosition.x + (Input.mousePosition.x - dragPos.x) / 50.0f,
+                            initPlayerPosition.x + (Input.mousePosition.x - dragPos.x) / 50.0f + 0.001f,
                             0.5f,
-                            initPlayerPosition.z + (Input.mousePosition.y - dragPos.y) / 50.0f
+                            initPlayerPosition.z + (Input.mousePosition.y - dragPos.y) / 50.0f + 0.001f
                             ));
                         //한번 움직이고 나서 dragPos의 값을 초기화 시켜줌
                         //dragPos = Input.mousePosition;
@@ -164,18 +197,23 @@ namespace ClientLibrary
                     //블락 설치 버튼
                     if (Input.GetMouseButtonDown(2))
                     {
-                        PlaceBlock();
+                        photonView.RPC("PlaceBlock", RpcTarget.All);
+                        //PlaceBlock();
                     }
                 }
             }
         }
 
+        [PunRPC]
         private void PlaceBlock() {
-            //빌딩 모드에서 마우스 좌클릭시 블락 설치되는 부분 
-            GameObject newBlock = Instantiate(blockPrefab, currentTemplateBlock.transform.position, Quaternion.identity);
-            //Block tempBlock = bSys.allBlocks[blockSelectCounter];
-            //newBlock.name = tempBlock.blockName + "-Block";
-            //newBlock.GetComponent<MeshRenderer>().material = tempBlock.blockMaterial;
+            if (canBuild && currentTemplateBlock != null)
+            {
+                //빌딩 모드에서 마우스 좌클릭시 블락 설치되는 부분 
+                GameObject newBlock = Instantiate(blockPrefab, currentTemplateBlock.transform.position, Quaternion.identity);
+                //Block tempBlock = bSys.allBlocks[blockSelectCounter];
+                //newBlock.name = tempBlock.blockName + "-Block";
+                //newBlock.GetComponent<MeshRenderer>().material = tempBlock.blockMaterial;
+            }
         }
 
         //Grid 연동부분

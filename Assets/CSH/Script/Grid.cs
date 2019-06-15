@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using UnityEditor;
+using UnityEngine.UI;
 
 namespace ClientLibrary
 {
@@ -16,6 +17,9 @@ namespace ClientLibrary
 
         private int sharePointA = 0;
         private int sharePointB = 0;
+
+        public Text AScore;
+        public Text BScore;
 
         //Awake is always called before any Start functions
         void Awake()
@@ -191,14 +195,14 @@ namespace ClientLibrary
             return mapArray[(int)gridPosition.x, (int)gridPosition.z];
         }
 
-        public bool GetSetBoolPlayerOcuupationPosition(Vector3 position, bool? setBool = null)
+        public bool GetSetBoolPlayerOcuupationPosition(Vector3 position, PlayerCtrl.PlayerTeam playerTeam = PlayerCtrl.PlayerTeam.empty, bool? setBool = null)
         {
             Vector3 gridPosition = GridPositionToArray(position);
             if (setBool != null)
             {
                 //점수 계산부분
                 if (playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] == false && setBool == true)
-                    CalculateShare(position);
+                    CalculateShare(position, playerTeam);
                 playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
                 
             }
@@ -221,25 +225,32 @@ namespace ClientLibrary
         }
 
         //map에 object가 있는지 bool 값으로 체크 (true: object 존재, false object 없음)
-        public string CalculateShare(Vector3 position, PlayerCtrl.PlayerTeam playerTeam = PlayerCtrl.PlayerTeam.A)
+        public string CalculateShare(Vector3 position, PlayerCtrl.PlayerTeam playerTeam = PlayerCtrl.PlayerTeam.empty)
         {
+            
             //print("AA");
             //Vector3 gridPosition = GridPositionToArray(position);
             Vector3 gridPosition = GridPositionToArray(position);
             string occupation = shareArray[(int)gridPosition.x, (int)gridPosition.z];
 
+            if (playerTeam == PlayerCtrl.PlayerTeam.empty)
+            {
+                return shareArray[(int)gridPosition.x, (int)gridPosition.z];
+            }
 
             //점유 되어있는 곳이 없고 B가 점유를 할 예정일때
             if (occupation == null && playerTeam == PlayerCtrl.PlayerTeam.B)
             {
                 //B의 점수를 올린다.
                 sharePointB++;
+                print("B++");
             }
             //점유 되어있는 곳이 없고 A가 점유를 할 예정일때
             else if (occupation == null && playerTeam == PlayerCtrl.PlayerTeam.A)
             {
                 //A의 점수를 올린다.
                 sharePointA++;
+                print("A++");
             }
             //점유 되어있는 곳이 A이고 B가 점유를 할 예정일때
             else if (occupation == "A" && playerTeam == PlayerCtrl.PlayerTeam.B)
@@ -263,6 +274,8 @@ namespace ClientLibrary
             //    print(GetShareText() + "");
             //}
             //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
+            AScore.text = sharePointA + "!";
+            BScore.text = sharePointB + "!!";
             print("calculate current share point : " + sharePointA +" , " +  sharePointB);
             return shareArray[(int)gridPosition.x, (int)gridPosition.z];
         }

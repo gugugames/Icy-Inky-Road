@@ -11,6 +11,7 @@ public class PlayerCtrl : MonoBehaviourPun
 {
     public enum PlayerTeam
     {
+        empty,
         A,
         B
     }
@@ -64,10 +65,19 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
             //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
             Destroy(gameObject);*/
-
-        
     }
+    [PunRPC]
+    public void ChangeColor()
+    {
+        playerTeam = PlayerTeam.B;
+        transform.Find("Particle System").GetComponent<ParticlePainter>().brush.splatChannel = 1;
+    }
+
     private void Start() {
+        if(PhotonNetwork.PlayerList[0].UserId == PhotonNetwork.AuthValues.UserId && photonView.IsMine)
+        {
+            photonView.RPC("ChangeColor", RpcTarget.All);
+        }
         if (!photonView.IsMine)
         {
             return;
@@ -267,20 +277,20 @@ if (Input.touchCount > 0)
                     CheckForward(dir.Value);
                     transform.position = grid.GetCurrentGrid(transform.position,dir.Value) + new Vector3(0.001f, 0, 0.001f);
                     StopMove();
-                    grid.GetSetBoolPlayerOcuupationPosition(transform.position, true);
-                    grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), false);
+                    photonView.RPC("Calculate", RpcTarget.All, dir.Value);
                     //Debug.Log("Did Hit");
                 }
             }
             else
             {
                 //print("AA");
-
-                grid.GetSetBoolPlayerOcuupationPosition(transform.position, true);
+                photonView.RPC("Calculate2", RpcTarget.All, dir.Value);
+                //grid.GetSetBoolPlayerOcuupationPosition(transform.position, playerTeam, true);
                 if(grid.CheckWallPosition(grid.GetPreviousGrid(transform.position, dir.Value)) == false)
                 {
+                    photonView.RPC("Calculate3", RpcTarget.All, dir.Value);
                     //print("AA : " + grid.CheckWallPosition(grid.GetPreviousGrid(transform.position, dir.Value)));
-                    grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), false);
+                    //grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), playerTeam, false);
 
                 }
                 grid.SetMapShareArray(transform.position, playerTeam);
@@ -293,6 +303,23 @@ if (Input.touchCount > 0)
             yield return null;
 
         }
+    }
+
+    [PunRPC]
+    public void Calculate(Vector3? dir = null)
+    {
+        grid.GetSetBoolPlayerOcuupationPosition(transform.position, playerTeam, true);
+        grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), playerTeam, false);
+    }
+    [PunRPC]
+    public void Calculate2(Vector3? dir = null)
+    {
+        grid.GetSetBoolPlayerOcuupationPosition(transform.position, playerTeam, true);
+    }
+    [PunRPC]
+    public void Calculate3(Vector3? dir = null)
+    {
+        grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), playerTeam, false);
     }
 
     private bool CheckForward(Vector3 dir)

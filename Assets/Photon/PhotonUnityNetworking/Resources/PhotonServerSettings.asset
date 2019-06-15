@@ -31,5 +31,11 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - Start
+  - ChangeColor
+  - Calculate
+  - Calculate2
+  - Calculate3
+  - PlaceBlock
   DisableAutoOpenWizard: 1
   ShowSettings: 0
