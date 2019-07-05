@@ -1,4 +1,17 @@
-﻿using UnityEngine;
+﻿/*
+ * Grid.cs
+ * 
+ * 요악
+ * Grid를 생성, World Space에서의 위치를 2차원 Grid 내부의 index로 변환하는 등의 역할을 한다.
+ * 
+ * 수정
+ * BoolCurrentPosition 보다는 IsOccupied 또는 Exist로 매서드명을 바꾸는게 낫지 않을까. 
+ * 단순히 Grid에 현재 무언가가 있는지 없는지를 판단하는 걸 넘어서 무엇이 있는지를 확실하게 알 수 있도록 GameObject 또는 Transform의 이차원 배열을 이용하는 것도 좋을듯. 
+ * 현재 구현은 [mapSize, mapSize] 크기의 2차원 배열을 활용하므로 정사각형 맵만 지원한다. MapGenerator.cs에서 가로 세로의 길이가 다르게 지정할 수 있는 것과 다르다. 
+ * 
+ */
+
+using UnityEngine;
 using System;
 using UnityEditor;
 using UnityEngine.UI;

@@ -1,4 +1,19 @@
-﻿using System.Collections;
+﻿/*
+ * BuildSystem.cs
+ * 
+ * 요약
+ * 장애물(Block 묶음)의 설치를 담당한다.
+ * 드래그 앤 드랍으로 Grid에서 적당한 위치를 찾아 Block을 설치한다.
+ * 
+ * 수정
+ * 하나의 Block을 설치하는 것이 아닌 Block 묶음을 설치할 수 있도록 해야 한다.
+ * 장애물 설치는 장애물 선택 -> 장애물 자동 배치 -> 장애물 이동 반복 -> 장애물 최종 설치 순으로 이루어지는데,
+ * 장애물의 초기 위치를 지정해 자동 배치하는 매서드가 필요하다. 
+ * 또한 e를 눌렀을 때 장애물 이동이 가능한 기존 구현을 장애물을 선택했을 때 이동이 가능하도록 수정해야 한다.
+ * BuildingSystem 이름을 BlockManager 혹은 BlockDisposer로 바꾸는게 좋아보인다. BuildingSystem은 Block이라는 개념을 포함하지 않는다. 
+ * 
+ */
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;

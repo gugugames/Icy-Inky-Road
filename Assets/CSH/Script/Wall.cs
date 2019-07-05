@@ -1,4 +1,15 @@
-﻿using UnityEngine;
+﻿/*
+ * Wall.cs
+ * 
+ * 요약
+ * Wall 속성을 갖는 Cube에 포함되어 Grid에 현재 위치에 Wall이 있다고 알려준다.
+ * 
+ * 수정
+ * BlockSystem.cs에 적어놓은 대대적인 수정사항 참고
+ * 
+ */
+
+using UnityEngine;
 using System.Collections;
 
 

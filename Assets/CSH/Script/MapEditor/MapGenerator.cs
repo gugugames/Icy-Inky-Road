@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿/*
+ * MapGenerator.cs
+ * 
+ * Unity Editor 환경에서 직접 동적인 맵 생성 기능을 제공하는 Script.
+ * 외벽, 타일, 맵의 크기, 외곽선 너비 등을 지정할 수 있다. 
+ * Unity Editor와의 상호작용은 MapEditor.cs에서 관리하며 Refresh 버튼을 눌렀을 때 GenerateMap() 매서드가 호출된다.
+ * 
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class MapGenerator : MonoBehaviour {
