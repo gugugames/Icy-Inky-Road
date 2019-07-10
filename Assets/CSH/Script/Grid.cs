@@ -158,8 +158,6 @@ namespace ClientLibrary
                 print("set map share array : " + shareArray[(int)gridPosition.x, (int)gridPosition.z]);
 
             }
-
-            //CalculateShare(position, playerTeam);
         }
 
         //매개변수 position의 점유자 반환
@@ -177,35 +175,33 @@ namespace ClientLibrary
                 position.z + (mapSize / 2) - 0.5f);
         }
 
-        /*
-         * 매개변수 x,y(array index) 값을 position 값으로 변환하여 반환
-         * x,y : array index
-         */
+         // 매개변수 x,y(array index) 값을 position 값으로 변환하여 반환
         public Vector2 GridArrayToPosition(int x, int y)
         {
             return new Vector2((-mapSize / 2 - 0.5f) + x, (-mapSize / 2 - 0.5f) + y);
         }
 
-        /*
-         * 매개변수 position의 값을 grid 값으로 변화하여 반환
-         */ 
+         //매개변수 position의 값을 grid 값으로 변환하여 반환
         public Vector3 GetCurrentGrid(Vector3 position)
         {
             return GetNearestPointOnGrid(position);
         }
 
+        //현재 위치의 바로 후 grid 반환
         public Vector3 GetNextGrid(Vector3 position, Vector3 dir)
         {
-            //print("GetCurrnetGrid : " + GetNearestPointOnGrid(transform.position + dir * 2));
             return GetNearestPointOnGrid(position + dir);
         }
 
+        //현재 위치의 바로 직전 grid 반환
         public Vector3 GetPreviousGrid(Vector3 position, Vector3 dir)
         {
             return GetNearestPointOnGrid(position - dir);
         }
 
-        //나중에 두 메서드 합쳐야함 BoolCurrentPosition, GridShare
+        // 매개변수 position - 값을 grid로 변환하여 벽의 유무 리턴
+        // 매개변수 setBool - !null : setBool 값으로 position의 mapArray 값을 세팅함 (true : 벽존재 / false : 벽 없음)
+        // 매개변수 setBool - null : position값으로 mapArray 값 반환
         public bool GetSetBoolWallPosition(Vector3 position, bool? setBool = null)
         {
             Vector3 gridPosition = GridPositionToArray(position);
@@ -215,6 +211,7 @@ namespace ClientLibrary
             return mapArray[(int)gridPosition.x, (int)gridPosition.z];
         }
 
+        //
         public bool GetSetBoolPlayerOcuupationPosition(Vector3 position, PlayerCtrl.PlayerTeam playerTeam = PlayerCtrl.PlayerTeam.empty, bool? setBool = null)
         {
             Vector3 gridPosition = GridPositionToArray(position);
@@ -288,15 +285,8 @@ namespace ClientLibrary
             }
 
 
-            //if (shareTeam != null)
-            //{
-            //    shareArray[(int)gridPosition.x, (int)gridPosition.z] = shareTeam;
-            //    print(GetShareText() + "");
-            //}
-            //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
             AScore.text = sharePointA + "!";
             BScore.text = sharePointB + "!!";
-            print("calculate current share point : " + sharePointA +" , " +  sharePointB);
             return shareArray[(int)gridPosition.x, (int)gridPosition.z];
         }
         
@@ -310,13 +300,6 @@ namespace ClientLibrary
             return CalculateShare(position);
         }
 
-        public void SetShare(bool whoGetPoint)
-        {
-            if(whoGetPoint == true)
-            {
-                sharePointA++;
-            }
-        }
 
 
     }
