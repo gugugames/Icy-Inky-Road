@@ -99,7 +99,7 @@ namespace ClientLibrary
             }
         }
 
-        
+        //map Size 초기화
         public void InitMapArray()
         {
             mapArray = new bool[mapSize,mapSize];
@@ -162,28 +162,35 @@ namespace ClientLibrary
             //CalculateShare(position, playerTeam);
         }
 
+        //매개변수 position의 점유자 반환
         public string GetMapShareArray(Vector3 position)
         {
             Vector3 gridPosition = GridPositionToArray(position);
             return shareArray[(int)gridPosition.x, (int)gridPosition.z];
         }
 
+        //매개변수 position의 값을 array index 값으로 변환하여 반환
         public Vector3 GridPositionToArray(Vector3 position)
         {
-            //print("AAAA : " + (position.x + (mapSize / 2) - 0.5f));
             return new Vector3(position.x + (mapSize / 2) - 0.5f, 
                 position.y,
                 position.z + (mapSize / 2) - 0.5f);
         }
 
+        /*
+         * 매개변수 x,y(array index) 값을 position 값으로 변환하여 반환
+         * x,y : array index
+         */
         public Vector2 GridArrayToPosition(int x, int y)
         {
-            return new Vector2((-mapSize / 2 - 0.5f) + x, (-mapSize / 2 - 0.5f) + y); ;
+            return new Vector2((-mapSize / 2 - 0.5f) + x, (-mapSize / 2 - 0.5f) + y);
         }
 
-        public Vector3 GetCurrentGrid(Vector3 position, Vector3? dir = null)
+        /*
+         * 매개변수 position의 값을 grid 값으로 변화하여 반환
+         */ 
+        public Vector3 GetCurrentGrid(Vector3 position)
         {
-            //print("GetCurrnetGrid : " + grid.GetNearestPointOnGrid(transform.position));
             return GetNearestPointOnGrid(position);
         }
 
