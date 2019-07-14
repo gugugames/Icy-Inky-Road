@@ -24,9 +24,9 @@ namespace ClientLibrary
         private int size = 1;
         public static Grid instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
         public int mapSize = 12;
-        public bool[,] mapArray;
+        public bool[,] mapArray;  //bool값의 변수명은 isInMap, isOccupied 등 yes/no로 표현할 수 있는 게 좋을듯
         public bool[,] playerOccupationArray;
-        public string[,] shareArray;
+        public string[,] shareArray; //share이라는 의미가 조금 불분명한 것 같아서 점유팀array라는 의미를 담을 수 있도록 변수명을 변경하는게 좋을듯
 
         private int sharePointA = 0;
         private int sharePointB = 0;
@@ -202,7 +202,8 @@ namespace ClientLibrary
         // 매개변수 position - 값을 grid로 변환하여 벽의 유무 리턴
         // 매개변수 setBool - !null : setBool 값으로 position의 mapArray 값을 세팅함 (true : 벽존재 / false : 벽 없음)
         // 매개변수 setBool - null : position값으로 mapArray 값 반환
-        public bool GetSetBoolWallPosition(Vector3 position, bool? setBool = null)
+        public bool GetSetBoolWallPosition(Vector3 position, bool? setBool = null) 
+        //메소드명에 get과 set이 함께 있는게 굉장히 어색해보여서 메소드명에 대한 논의가 필요해보임. isInMapArray 와 같은 표현은 어떨지..                                 
         {
             Vector3 gridPosition = GridPositionToArray(position);
             if (setBool != null)
@@ -243,15 +244,15 @@ namespace ClientLibrary
 
         //map에 object가 있는지 bool 값으로 체크 (true: object 존재, false object 없음)
         public string CalculateShare(Vector3 position, PlayerCtrl.PlayerTeam playerTeam = PlayerCtrl.PlayerTeam.empty)
+        //함수 이름은 동사+명사 형식이 적합할듯 하다! ex) CalculatePoint
+        //한 함수 안에서 두가지 일을 동시에 하고 있다(현재 점유팀의 이름 반환과 영역 계산) -> 두함수로 쪼개서 처리하는게 좋을 것 같다
         {
-            
-            //print("AA");
-            //Vector3 gridPosition = GridPositionToArray(position);
             Vector3 gridPosition = GridPositionToArray(position);
-            string occupation = shareArray[(int)gridPosition.x, (int)gridPosition.z];
+            string occupation = shareArray[(int)gridPosition.x, (int)gridPosition.z]; //currentOccupationTeam?
 
             if (playerTeam == PlayerCtrl.PlayerTeam.empty)
             {
+
                 return shareArray[(int)gridPosition.x, (int)gridPosition.z];
             }
 
