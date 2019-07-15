@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using ClientLibrary;
-
+using ExitGames.Client.Photon;
 
 
 public class PlayerCtrl : MonoBehaviourPun
@@ -27,7 +27,7 @@ public class PlayerCtrl : MonoBehaviourPun
 
     private int inputXDir;
     private int inputYDir;
-
+    private int playerScore = 0;
 
     private BoxCollider boxCollider;      //The BoxCollider2D component attached to this object.
     private CharacterController controller;
@@ -117,13 +117,19 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
 
     private void MoveCtrl() {
+        playerScore += 1;
+
+        ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
+        PlayerCustomProps["Score"] = playerScore;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(PlayerCustomProps);
+
         //If it's not the player's turn, exit the function.
         //moveDirection.x = 0;     //Used to store the horizontal move direction.
         //moveDirection.z = 0;      //Used to store the vertical move direction.
 
         //Check if we are running either in the Unity editor or in a standalone build.
 #if UNITY_STANDALONE || UNITY_WEBPLAYER
-   
+
         //Get input from the input manager, round it to an integer and store in horizontal to set x axis move direction
         moveDirection.x = (int)(Input.GetAxisRaw("Horizontal"));
 

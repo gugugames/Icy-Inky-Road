@@ -3,15 +3,16 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 
 using System.Collections.Generic;		//Allows us to use Lists. 
-using UnityEngine.UI;					//Allows us to use UI.
+using UnityEngine.UI;                   //Allows us to use UI.
+using Photon.Pun;
 
-
-    public class GameManager : MonoBehaviour
-    {
-        public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
+public class GameManager : MonoBehaviourPun
+{
+    public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
 
     //Awake is always called before any Start functions
-    void Awake() {
+    void Awake()
+    {
         //Check if instance already exists
         if (instance == null)
 
@@ -28,10 +29,17 @@ using UnityEngine.UI;					//Allows us to use UI.
         DontDestroyOnLoad(gameObject);
     }
 
-        //Update is called every frame.
-        void Update() {
-           
-        }
-
-
+    //Update is called every frame.
+    void Update()
+    {
+        ScoreManager();
     }
+
+    public void ScoreManager()
+    {
+        foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
+        {
+            Debug.Log(player.NickName.ToString() + " Score : " + player.CustomProperties["Score"].ToString());
+        }
+    }
+}

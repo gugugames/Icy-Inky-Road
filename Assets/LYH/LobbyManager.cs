@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using System;
+using ExitGames.Client.Photon;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -101,6 +102,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.PlayerList.Length >= playerNumber)
         {
+            Hashtable PlayerCustomProps = new Hashtable();
+            PlayerCustomProps["Score"] = 0;
+            PhotonNetwork.LocalPlayer.SetCustomProperties(PlayerCustomProps);
+
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.LoadLevel(sceneIndex);
         }
