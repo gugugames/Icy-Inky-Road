@@ -103,7 +103,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.PlayerList.Length >= playerNumber)
         {
             Hashtable PlayerCustomProps = new Hashtable();
-            PlayerCustomProps["Score"] = 0;
+            PlayerCustomProps["ScoreA"] = 0;
+            PlayerCustomProps["ScoreB"] = 0;
             PhotonNetwork.LocalPlayer.SetCustomProperties(PlayerCustomProps);
 
             PhotonNetwork.CurrentRoom.IsOpen = false;

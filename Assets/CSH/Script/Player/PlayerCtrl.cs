@@ -18,7 +18,7 @@ public class PlayerCtrl : MonoBehaviourPun
 
     //플레이 시작시 설정해야하는 값
     //기본 A
-    public PlayerTeam playerTeam = PlayerTeam.A;
+    public PlayerTeam playerTeam;
 
     public int horizontal = 0;     //Used to store the horizontal move direction.
     public int vertical = 0;
@@ -66,18 +66,31 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
             //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
             Destroy(gameObject);*/
     }
+
     [PunRPC]
-    public void ChangeColor()
+    public void ChangeColorA()
+    {
+        playerTeam = PlayerTeam.A;
+        transform.Find("Particle System").GetComponent<ParticlePainter>().brush.splatChannel = 0;
+    }
+
+    [PunRPC]
+    public void ChangeColorB()
     {
         playerTeam = PlayerTeam.B;
         transform.Find("Particle System").GetComponent<ParticlePainter>().brush.splatChannel = 1;
     }
 
     private void Start() {
-        if(PhotonNetwork.PlayerList[0].UserId == PhotonNetwork.AuthValues.UserId && photonView.IsMine)
+        if (!PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("ChangeColor", RpcTarget.All);
+            photonView.RPC("ChangeColorB", RpcTarget.All);
         }
+        else
+        {
+            photonView.RPC("ChangeColorA", RpcTarget.All);
+        }
+
         if (!photonView.IsMine)
         {
             return;
@@ -117,12 +130,6 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
 
     private void MoveCtrl() {
-        playerScore += 1;
-
-        ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
-        PlayerCustomProps["Score"] = playerScore;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(PlayerCustomProps);
-
         //If it's not the player's turn, exit the function.
         //moveDirection.x = 0;     //Used to store the horizontal move direction.
         //moveDirection.z = 0;      //Used to store the vertical move direction.
@@ -314,6 +321,9 @@ if (Input.touchCount > 0)
     [PunRPC]
     public void Calculate(Vector3? dir = null)
     {
+        if (dir == null)
+            return;
+
         grid.GetSetBoolPlayerOcuupationPosition(transform.position, playerTeam, true);
         grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), playerTeam, false);
     }

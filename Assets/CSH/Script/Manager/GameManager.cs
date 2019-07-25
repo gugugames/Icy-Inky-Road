@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviourPun
     //Update is called every frame.
     void Update()
     {
-        ScoreManager();
+        //ScoreManager();
     }
 
     public void ScoreManager()

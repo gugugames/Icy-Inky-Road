@@ -15,6 +15,7 @@ using UnityEngine;
 using System;
 using UnityEditor;
 using UnityEngine.UI;
+using Photon.Pun;
 
 namespace ClientLibrary
 {
@@ -285,9 +286,13 @@ namespace ClientLibrary
                 sharePointB--;
             }
 
+            ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
+            PlayerCustomProps["ScoreA"] = sharePointA;
+            PlayerCustomProps["ScoreB"] = sharePointB;
 
-            AScore.text = sharePointA + "!";
-            BScore.text = sharePointB + "!!";
+            PhotonNetwork.LocalPlayer.SetCustomProperties(PlayerCustomProps);
+            AScore.text = PhotonNetwork.LocalPlayer.CustomProperties["ScoreA"].ToString() + "!";
+            BScore.text = PhotonNetwork.LocalPlayer.CustomProperties["ScoreB"].ToString() + "!!";
             return shareArray[(int)gridPosition.x, (int)gridPosition.z];
         }
         
