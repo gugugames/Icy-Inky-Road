@@ -131,9 +131,10 @@ namespace ClientLibrary
             }
             else
             {
+#if UNITY_EDITOR || UNITY_EDITOR_WIN || UNITY_STANDALONE || UNITY_WEBPLAYER
                 //E버튼 클릭시 빌딩 모드 실행, 다시 E 클릭시 빌딩모드 해제
-                StartBuildingMode();
-
+                //StartBuildingMode();
+#endif
                 if (buildModeOn)
                 {
 
