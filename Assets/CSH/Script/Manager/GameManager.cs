@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviourPun
     {
         foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
         {
+            if(player.CustomProperties["Score"] != null)
             Debug.Log(player.NickName.ToString() + " Score : " + player.CustomProperties["Score"].ToString());
         }
     }
