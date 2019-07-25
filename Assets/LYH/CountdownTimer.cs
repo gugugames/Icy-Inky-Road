@@ -50,6 +50,9 @@ namespace Photon.Pun.UtilityScripts
         public GameObject winPanel;
         public GameObject losePanel;
         public GameObject drawPanel;
+        public Text AScore;
+        public Text BScore;
+
         bool flag = false;
 
         PlayerCtrl[] player;
@@ -79,6 +82,9 @@ namespace Photon.Pun.UtilityScripts
         {
             if (countdown > 0)
             {
+                AScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreA"].ToString();
+                BScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreB"].ToString();
+
                 float timer = (float)PhotonNetwork.Time - startTime;
                 countdown = Countdown - timer;
 

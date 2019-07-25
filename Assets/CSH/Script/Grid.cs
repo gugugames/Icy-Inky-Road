@@ -32,9 +32,6 @@ namespace ClientLibrary
         private int sharePointA = 0;
         private int sharePointB = 0;
 
-        public Text AScore;
-        public Text BScore;
-
         ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
 
         //Awake is always called before any Start functions
@@ -297,12 +294,6 @@ namespace ClientLibrary
             PlayerCustomProps["ScoreB"] = sharePointB;
 
             PhotonNetwork.MasterClient.SetCustomProperties(PlayerCustomProps);
-        }
-
-        private void Update()
-        {
-            AScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreA"].ToString() + "!";
-            BScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreB"].ToString() + "!!";
         }
 
         public string GetShareText()

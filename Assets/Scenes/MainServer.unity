@@ -2828,8 +2828,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 1
   mapSize: 12
-  AScore: {fileID: 1905950595}
-  BScore: {fileID: 174504460}
 --- !u!4 &262163795
 Transform:
   m_ObjectHideFlags: 0
@@ -14291,8 +14289,10 @@ MonoBehaviour:
   winPanel: {fileID: 1254262781}
   losePanel: {fileID: 1581019430}
   drawPanel: {fileID: 1637092421}
+  AScore: {fileID: 1905950595}
+  BScore: {fileID: 174504460}
   Text: {fileID: 592657284}
-  Countdown: 3
+  Countdown: 60
 --- !u!1 &1647550238
 GameObject:
   m_ObjectHideFlags: 0
