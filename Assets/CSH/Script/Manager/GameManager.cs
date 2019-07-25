@@ -26,21 +26,12 @@ public class GameManager : MonoBehaviourPun
             Destroy(gameObject);
 
         //Sets this to not be destroyed when reloading scene
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     //Update is called every frame.
     void Update()
     {
-        //ScoreManager();
-    }
 
-    public void ScoreManager()
-    {
-        foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
-        {
-            if(player.CustomProperties["Score"] != null)
-            Debug.Log(player.NickName.ToString() + " Score : " + player.CustomProperties["Score"].ToString());
-        }
     }
 }

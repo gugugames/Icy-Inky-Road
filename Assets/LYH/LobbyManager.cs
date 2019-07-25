@@ -29,10 +29,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        if (!PhotonNetwork.IsConnected)
+        {
+            // 설정한 정보로 마스터 서버 접속 시도
+            PhotonNetwork.ConnectUsingSettings();
+        }
         // 접속에 필요한 정보(게임 버전) 설정
         PhotonNetwork.GameVersion = gameVersion;
-        // 설정한 정보로 마스터 서버 접속 시도
-        PhotonNetwork.ConnectUsingSettings();
         // 룸 접속 버튼 잠시 비활성화
         joinButton.interactable = false;
         // 접속 시도 중임을 텍스트로 표시
