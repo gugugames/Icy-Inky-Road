@@ -273,7 +273,7 @@ if (Input.touchCount > 0)
             //print("AA : " + Vector3.Distance(transform.position, grid.GetCurrnetGrid(transform.position)));
             if (CheckForward(dir.Value))
             {
-                if (Vector3.Distance(transform.position, grid.GetCurrentGrid(transform.position, dir.Value)) > 0.1f)
+                if (Vector3.Distance(transform.position, grid.GetCurrentGrid(transform.position)) > 0.1f)
                 {
                     
                     transform.Translate(dir.Value * speed);
@@ -281,7 +281,7 @@ if (Input.touchCount > 0)
                 else
                 {
                     CheckForward(dir.Value);
-                    transform.position = grid.GetCurrentGrid(transform.position,dir.Value) + new Vector3(0.001f, 0, 0.001f);
+                    transform.position = grid.GetCurrentGrid(transform.position) + new Vector3(0.001f, 0, 0.001f);
                     StopMove();
                     photonView.RPC("Calculate", RpcTarget.All, dir.Value);
                     //Debug.Log("Did Hit");
