@@ -19,7 +19,7 @@ using Photon.Pun;
 
 namespace ClientLibrary
 {
-    public class Grid : MonoBehaviour
+    public class Grid : MonoBehaviourPun
     {
         [SerializeField]
         private int size = 1;
@@ -34,6 +34,8 @@ namespace ClientLibrary
 
         public Text AScore;
         public Text BScore;
+
+        ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
 
         //Awake is always called before any Start functions
         void Awake()
@@ -220,10 +222,9 @@ namespace ClientLibrary
             if (setBool != null)
             {
                 //점수 계산부분
-                if (playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] == false && setBool == true)
+                if (PhotonNetwork.IsMasterClient && playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] == false && setBool == true)
                     CalculateShare(position, playerTeam);
                 playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
-                
             }
             //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
             return playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z];
@@ -253,7 +254,6 @@ namespace ClientLibrary
 
             if (playerTeam == PlayerCtrl.PlayerTeam.empty)
             {
-
                 return shareArray[(int)gridPosition.x, (int)gridPosition.z];
             }
 
@@ -286,16 +286,25 @@ namespace ClientLibrary
                 sharePointB--;
             }
 
-            ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
+            ScoreCustomProps();
+
+            return shareArray[(int)gridPosition.x, (int)gridPosition.z];
+        }
+
+        public void ScoreCustomProps()
+        {
             PlayerCustomProps["ScoreA"] = sharePointA;
             PlayerCustomProps["ScoreB"] = sharePointB;
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(PlayerCustomProps);
-            AScore.text = PhotonNetwork.LocalPlayer.CustomProperties["ScoreA"].ToString() + "!";
-            BScore.text = PhotonNetwork.LocalPlayer.CustomProperties["ScoreB"].ToString() + "!!";
-            return shareArray[(int)gridPosition.x, (int)gridPosition.z];
+            PhotonNetwork.MasterClient.SetCustomProperties(PlayerCustomProps);
         }
-        
+
+        private void Update()
+        {
+            AScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreA"].ToString() + "!";
+            BScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreB"].ToString() + "!!";
+        }
+
         public string GetShareText()
         {
             return "A : " + sharePointA + ", B : " + sharePointB;

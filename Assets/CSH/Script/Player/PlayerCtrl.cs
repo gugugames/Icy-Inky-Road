@@ -82,6 +82,9 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
     }
 
     private void Start() {
+        //grid 초기화
+        grid = ClientLibrary.Grid.instance;
+
         if (!PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("ChangeColorB", RpcTarget.All);
@@ -102,9 +105,6 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
 
             //Get a component reference to this object's BoxCollider2D
             boxCollider = GetComponent<BoxCollider>();
-
-            //grid 초기화
-            grid = ClientLibrary.Grid.instance;
 
             //currentGrid 초기화
             currentGrid = grid.GetNearestPointOnGrid(transform.position);
@@ -306,7 +306,7 @@ if (Input.touchCount > 0)
                     //grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), playerTeam, false);
 
                 }
-                grid.SetMapShareArray(transform.position, playerTeam);
+                photonView.RPC("shareArraySync", RpcTarget.All);
                 //dir 이 null 이 아니면 실행
                 transform.Translate(dir.Value * speed);
                 //print("SmoothMovement");
@@ -319,22 +319,27 @@ if (Input.touchCount > 0)
     }
 
     [PunRPC]
+    public void shareArraySync()
+    {
+        grid.SetMapShareArray(transform.position, playerTeam);
+    }
+    [PunRPC]
     public void Calculate(Vector3? dir = null)
     {
-        if (dir == null)
-            return;
-
+        Debug.Log("1");
         grid.GetSetBoolPlayerOcuupationPosition(transform.position, playerTeam, true);
         grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), playerTeam, false);
     }
     [PunRPC]
     public void Calculate2(Vector3? dir = null)
     {
+        Debug.Log("2");
         grid.GetSetBoolPlayerOcuupationPosition(transform.position, playerTeam, true);
     }
     [PunRPC]
     public void Calculate3(Vector3? dir = null)
     {
+        Debug.Log("3");
         grid.GetSetBoolPlayerOcuupationPosition(grid.GetPreviousGrid(transform.position, dir.Value), playerTeam, false);
     }
 

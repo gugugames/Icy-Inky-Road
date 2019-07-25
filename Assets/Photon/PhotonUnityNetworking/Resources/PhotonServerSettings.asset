@@ -40,5 +40,6 @@ MonoBehaviour:
   - ScoreManager
   - ChangeColorA
   - ChangeColorB
+  - shareArraySync
   DisableAutoOpenWizard: 1
   ShowSettings: 0
