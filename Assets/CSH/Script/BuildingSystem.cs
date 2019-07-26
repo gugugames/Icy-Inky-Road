@@ -225,7 +225,7 @@ namespace ClientLibrary
             if (canBuild && currentTemplateBlock != null)
             {
                 //빌딩 모드에서 마우스 좌클릭시 블락 설치되는 부분 
-                GameObject newBlock = Instantiate(blockPrefab, currentTemplateBlock.transform.position, Quaternion.identity);
+                GameObject newBlock = PhotonNetwork.Instantiate(blockPrefab.name, currentTemplateBlock.transform.position, Quaternion.identity);
             }
         }
 
