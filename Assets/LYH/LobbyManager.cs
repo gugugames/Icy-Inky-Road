@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using System;
+using ExitGames.Client.Photon;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -28,10 +29,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        if (!PhotonNetwork.IsConnected)
+        {
+            // 설정한 정보로 마스터 서버 접속 시도
+            PhotonNetwork.ConnectUsingSettings();
+        }
         // 접속에 필요한 정보(게임 버전) 설정
         PhotonNetwork.GameVersion = gameVersion;
-        // 설정한 정보로 마스터 서버 접속 시도
-        PhotonNetwork.ConnectUsingSettings();
         // 룸 접속 버튼 잠시 비활성화
         joinButton.interactable = false;
         // 접속 시도 중임을 텍스트로 표시
@@ -101,6 +105,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.PlayerList.Length >= playerNumber)
         {
+            Hashtable PlayerCustomProps = new Hashtable();
+            PlayerCustomProps["ScoreA"] = 0;
+            PlayerCustomProps["ScoreB"] = 0;
+            PhotonNetwork.LocalPlayer.SetCustomProperties(PlayerCustomProps);
+
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.LoadLevel(sceneIndex);
         }

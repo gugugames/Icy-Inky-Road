@@ -15,10 +15,11 @@ using UnityEngine;
 using System;
 using UnityEditor;
 using UnityEngine.UI;
+using Photon.Pun;
 
 namespace ClientLibrary
 {
-    public class Grid : MonoBehaviour
+    public class Grid : MonoBehaviourPun
     {
         [SerializeField]
         private int size = 1;
@@ -31,8 +32,7 @@ namespace ClientLibrary
         private int sharePointA = 0;
         private int sharePointB = 0;
 
-        public Text AScore;
-        public Text BScore;
+        ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
 
         //Awake is always called before any Start functions
         void Awake()
@@ -62,7 +62,7 @@ namespace ClientLibrary
                 Destroy(gameObject);
 
             //Sets this to not be destroyed when reloading scene
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
 
 
@@ -219,10 +219,9 @@ namespace ClientLibrary
             if (setBool != null)
             {
                 //점수 계산부분
-                if (playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] == false && setBool == true)
+                if (PhotonNetwork.IsMasterClient && playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] == false && setBool == true)
                     CalculateShare(position, playerTeam);
                 playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z] = setBool.Value;
-                
             }
             //print("GridPositionToArray : " + (int)gridPosition.x + " , " + (int)gridPosition.z);
             return playerOccupationArray[(int)gridPosition.x, (int)gridPosition.z];
@@ -252,7 +251,6 @@ namespace ClientLibrary
 
             if (playerTeam == PlayerCtrl.PlayerTeam.empty)
             {
-
                 return shareArray[(int)gridPosition.x, (int)gridPosition.z];
             }
 
@@ -285,12 +283,19 @@ namespace ClientLibrary
                 sharePointB--;
             }
 
+            ScoreCustomProps();
 
-            AScore.text = sharePointA + "!";
-            BScore.text = sharePointB + "!!";
             return shareArray[(int)gridPosition.x, (int)gridPosition.z];
         }
-        
+
+        public void ScoreCustomProps()
+        {
+            PlayerCustomProps["ScoreA"] = sharePointA;
+            PlayerCustomProps["ScoreB"] = sharePointB;
+
+            PhotonNetwork.MasterClient.SetCustomProperties(PlayerCustomProps);
+        }
+
         public string GetShareText()
         {
             return "A : " + sharePointA + ", B : " + sharePointB;
@@ -300,9 +305,6 @@ namespace ClientLibrary
         {
             return CalculateShare(position);
         }
-
-
-
     }
 
 }
