@@ -25,7 +25,7 @@ namespace ClientLibrary
         public int horizontal = 0;     //Used to store the horizontal move direction.
         public int vertical = 0;
         public int queueLimit = 1;
-        public TextMesh tm;
+        //public TextMesh tm;
 
         private int inputXDir;
         private int inputYDir;
@@ -263,7 +263,7 @@ if (Input.touchCount > 0)
             if (queueMoveDirection.Count < queueLimit && moveDirection != null)
             {
                 QueueMove = this.moveDirection;
-                tm.text = PreDirection(this.moveDirection);
+                //tm.text = PreDirection(this.moveDirection);
                 //print("Enqueue : " + queueMoveDirection.Count);
                 //print("queueMoveDirection count : " + queueMoveDirection.Count);
                 //print("Enqueue : " + this.moveDirection);

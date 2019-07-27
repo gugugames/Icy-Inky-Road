@@ -196,7 +196,7 @@ TextMesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731126391004876}
-  m_Text: direction
+  m_Text: 
   m_OffsetZ: 0
   m_CharacterSize: 0.41
   m_LineSpacing: 1
@@ -239,7 +239,6 @@ MonoBehaviour:
   horizontal: 0
   vertical: 0
   queueLimit: 1
-  tm: {fileID: 102088727372804498, guid: 677e20579d8e1254ebe4cc5d6aa437da, type: 2}
   blockingLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -286,7 +285,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114672881337496302}
   viewIdField: 0
-  InstantiationId: 0
+  InstantiationId: 4
   isRuntimeInstantiated: 0
 --- !u!114 &114672881337496302
 MonoBehaviour:
@@ -321,7 +320,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114048138227659110}
   viewIdField: 0
-  InstantiationId: 0
+  InstantiationId: 3
   isRuntimeInstantiated: 0
 --- !u!114 &114923352302430318
 MonoBehaviour:
