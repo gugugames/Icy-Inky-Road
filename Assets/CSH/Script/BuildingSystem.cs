@@ -54,8 +54,12 @@ namespace ClientLibrary
         private Vector3 dragPosition;           //드래그된 위치를 PlaceCubeNear를 거쳐 저장
         private Vector3 initPlayerPosition;     //초기플레이어 위치
 
+        private PrepareBlockManager PrepareBlockSlot; //씬에 생성된 PrepareBlockSlot
+
         public Button tempButton1;      //Button 빌딩모드 시작/해제 버튼
         public Button tempButton2;      //Button 벽 생성 확정 버튼
+
+        
 
         //임시변수 나중에 수정함
         Vector3 temp;
@@ -68,6 +72,8 @@ namespace ClientLibrary
             }
             else
             {
+                //PrepareBlockSlot = GameObject.Find("SkillCanvas/PrepareBlockPanel").transform.GetComponent<PrepareBlockManager>();
+
                 //빌딩모드 시작/해제 버튼
                 tempButton1 = GameObject.Find("Canvas/Button").transform.GetComponent<Button>();
 
@@ -75,10 +81,11 @@ namespace ClientLibrary
                 tempButton2 = GameObject.Find("Canvas/Button (1)").transform.GetComponent<Button>();
 
                 //빌딩모드 시작/해제 버튼 메서드 연결
-                tempButton1.onClick.AddListener(() => StartBuildingMode());
+                //임시 연결 부분 나중에 동적으로 연결되게 설정해야됨
+                PrepareBlockManager.instance.GetBlockSlot(0).onClick.AddListener(() => StartBuildingMode());
 
                 //벽 생성 확정 버튼 메서드 연결
-                tempButton2.onClick.AddListener(() => PlaceBlock());
+                //tempButton2.onClick.AddListener(() => PlaceBlock());
                 
                 grid = FindObjectOfType<Grid>();
                 bSys = GetComponent<BlockSystem>();
@@ -105,8 +112,8 @@ namespace ClientLibrary
 #endif
                 //에디터 환경에서 동작하는 부분
 #if UNITY_EDITOR || UNITY_EDITOR_WIN || UNITY_STANDALONE || UNITY_WEBPLAYER
-            if (Input.GetKeyDown("e"))
-            {
+            //if (Input.GetKeyDown("e"))
+            //{
                 buildModeOn = !buildModeOn;
 
                 if (buildModeOn)
@@ -118,7 +125,7 @@ namespace ClientLibrary
                     canBuild = false;
                     Cursor.lockState = CursorLockMode.None;
                 }
-            }
+            //}
 #endif
         }
 
@@ -132,7 +139,7 @@ namespace ClientLibrary
             else
             {
                 //E버튼 클릭시 빌딩 모드 실행, 다시 E 클릭시 빌딩모드 해제
-                StartBuildingMode();
+                //StartBuildingMode();
 
                 if (buildModeOn)
                 {
@@ -166,6 +173,8 @@ namespace ClientLibrary
                 {
                     //이부분이 빌딩모드때 보이는 가상 블락 실행부분
                     currentTemplateBlock = Instantiate(blockTemplatePrefab, PlaceCubeNear(buildPos), Quaternion.identity);
+                    currentTemplateBlock.GetComponent<BlockSystem>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
+                    currentTemplateBlock.GetComponent<BlockSystem>().cancleButton.onClick.AddListener(() => StartBuildingMode());
                     currentTemplateBlock.GetComponent<MeshRenderer>().material = templateMaterial;
                     print("CC");
                 }
@@ -213,10 +222,21 @@ namespace ClientLibrary
                     //블락 설치 버튼
                     if (Input.GetMouseButtonDown(2))
                     {
-                        photonView.RPC("PlaceBlock", RpcTarget.All);
+                        
                     }
                 }
             }
+        }
+        private void CanclePlaceBlock()
+        {
+            canBuild = false;
+
+            Destroy(currentTemplateBlock);
+        }
+
+        private void PhotonPlaceBlock()
+        {
+            photonView.RPC("PlaceBlock", RpcTarget.All);
         }
 
         //블락위치를 확정하여 생성함

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillManager : MonoBehaviour {
+public class SlotInfo : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

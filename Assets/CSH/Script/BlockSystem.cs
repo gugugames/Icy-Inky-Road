@@ -21,11 +21,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 namespace ClientLibrary
 {
 
     public class BlockSystem : MonoBehaviour
     {
+        public Button checkButton;
+        public Button cancleButton;
 
         [SerializeField]
         private BlockType[] allBlockTypes;

@@ -35,7 +35,7 @@ namespace ClientLibrary
         ExitGames.Client.Photon.Hashtable PlayerCustomProps = new ExitGames.Client.Photon.Hashtable();
 
         Vector3 cubePos;
-        GameObject fakeCube;
+        GameObject templateBlock;
         public GameObject cube;
 
         //Awake is always called before any Start functions
@@ -310,33 +310,33 @@ namespace ClientLibrary
             return CalculateShare(position);
         }
 
-        private void Update()
-        {
-            if (Input.GetMouseButton(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //private void Update()
+        //{
+        //    if (Input.GetMouseButton(0))
+        //    {
+        //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                RaycastHit hitInfo;
+        //        RaycastHit hitInfo;
 
-                if (Physics.Raycast(ray, out hitInfo, 100f))
-                {
-                    cubePos = GetNearestPointOnGrid(hitInfo.point);
-                    if (fakeCube == null)
-                    {
-                        fakeCube = Instantiate(cube, cubePos, Quaternion.identity);
-                    }
-                    fakeCube.transform.position = cubePos;
+        //        if (Physics.Raycast(ray, out hitInfo, 100f))
+        //        {
+        //            cubePos = GetNearestPointOnGrid(hitInfo.point);
+        //            if (templateBlock == null)
+        //            {
+        //                templateBlock = Instantiate(cube, cubePos, Quaternion.identity);
+        //            }
+        //            templateBlock.transform.position = cubePos;
 
-                    Debug.Log(GetNearestPointOnGrid(hitInfo.point));
-                }
-            }
+        //            Debug.Log(GetNearestPointOnGrid(hitInfo.point));
+        //        }
+        //    }
 
-            if (Input.GetMouseButtonUp(0))
-            {
-                Destroy(fakeCube);
-                GameObject newBlock = PhotonNetwork.Instantiate("Cube", cubePos, Quaternion.identity);
-            }
-        }
+        //    if (Input.GetMouseButtonUp(0))
+        //    {
+        //        Destroy(templateBlock);
+        //        GameObject newBlock = PhotonNetwork.Instantiate("Cube", cubePos, Quaternion.identity);
+        //    }
+        //}
     }
 
 }
