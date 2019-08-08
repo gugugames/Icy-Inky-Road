@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 23692679131741978}
   - component: {fileID: 65624734677972612}
   - component: {fileID: 114365032253722780}
-  - component: {fileID: 114629490240765684}
   m_Layer: 9
   m_Name: Cube
   m_TagString: Wall
@@ -109,17 +108,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f321d476f7f21684e86237d92219dc7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114629490240765684
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1876210472984152}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d68660597a96de44bd431b8c044cb72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allBlockTypes:
-  - blockName: 
-    blockMat: {fileID: 2100000, guid: f1ba99b3e08a11c4cbb26a99f46d1464, type: 2}
+  tm: {fileID: 0}

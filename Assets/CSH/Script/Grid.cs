@@ -101,7 +101,7 @@ namespace ClientLibrary
             }
         }
 
-        //map Size 초기화
+        //map array 초기화
         public void InitMapArray()
         {
             mapArray = new bool[mapSize,mapSize];
@@ -116,6 +116,7 @@ namespace ClientLibrary
             print("InitMapArray done");
         }
 
+        //플레이어 점유 array 초기화
         public void InitPlayerOccupationArray()
         {
             playerOccupationArray = new bool[mapSize, mapSize];
