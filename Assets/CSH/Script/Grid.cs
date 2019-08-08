@@ -69,7 +69,6 @@ namespace ClientLibrary
             //DontDestroyOnLoad(gameObject);
         }
 
-
         public Vector3 GetNearestPointOnGrid(Vector3 position) {
             position -= transform.position;
 
@@ -99,7 +98,6 @@ namespace ClientLibrary
                     var point = GetNearestPointOnGrid(new Vector3(x, 0f, z));
                     Gizmos.DrawSphere(point, 0.1f);
                 }
-
             }
         }
 
@@ -179,7 +177,7 @@ namespace ClientLibrary
                 position.z + (mapSize / 2) - 0.5f);
         }
 
-         // 매개변수 x,y(array index) 값을 position 값으로 변환하여 반환
+        //매개변수 x,y(array index) 값을 position 값으로 변환하여 반환
         public Vector2 GridArrayToPosition(int x, int y)
         {
             return new Vector2((-mapSize / 2 - 0.5f) + x, (-mapSize / 2 - 0.5f) + y);
@@ -191,13 +189,13 @@ namespace ClientLibrary
             return GetNearestPointOnGrid(position);
         }
 
-        //현재 위치의 바로 후 grid 반환
+        //다음 grid 반환
         public Vector3 GetNextGrid(Vector3 position, Vector3 dir)
         {
             return GetNearestPointOnGrid(position + dir);
         }
 
-        //현재 위치의 바로 직전 grid 반환
+        //이전 grid 반환
         public Vector3 GetPreviousGrid(Vector3 position, Vector3 dir)
         {
             return GetNearestPointOnGrid(position - dir);

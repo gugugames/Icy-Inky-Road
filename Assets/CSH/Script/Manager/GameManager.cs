@@ -10,6 +10,12 @@ public class GameManager : MonoBehaviourPun
 {
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
 
+    public enum GameState
+    {
+        PREPARE,
+        PLAY,
+        END
+    }
     //Awake is always called before any Start functions
     void Awake()
     {

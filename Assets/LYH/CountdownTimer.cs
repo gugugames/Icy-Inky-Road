@@ -61,10 +61,14 @@ namespace Photon.Pun.UtilityScripts
         [Header("Reference to a Text component for visualizing the countdown")]
         public Text Text;
 
-        [Header("Countdown time in seconds")]
-        public float Countdown = 60.0f;
+        [Header("Play time in seconds")]
+        public float PLAY_TIME = 60.0F;
 
-        float countdown = 60;
+        [Header("Preparation time in seconds")]
+        public float PREPARATION_TIME = 30.0F;
+
+        public float preparationTime = 30; //준비 제한 시간
+        public float playTime = 60; //게임 플레이 제한 시간
 
         public void Start()
         {
@@ -80,15 +84,41 @@ namespace Photon.Pun.UtilityScripts
 
         public void Update()
         {
-            if (countdown > 0)
+
+            if (preparationTime > 0)
+            {
+                PreparationTimer();
+            }
+            else if (playTime > 0)
+            {
+                PlayTimer();
+            }
+        }
+
+        //블락 설치 대기 시간동안 돌아가는 메서드
+        public void PreparationTimer()
+        {
+            if(preparationTime > 0)
+            {
+                
+                float timer = (float)PhotonNetwork.Time - startTime;
+                preparationTime = PREPARATION_TIME - timer;
+
+                Text.text = string.Format(preparationTime.ToString("n0"));
+            }
+        }
+
+        public void PlayTimer()
+        {
+            if (playTime > 0)
             {
                 AScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreA"].ToString();
                 BScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreB"].ToString();
 
                 float timer = (float)PhotonNetwork.Time - startTime;
-                countdown = Countdown - timer;
+                playTime = PLAY_TIME - timer;
 
-                Text.text = string.Format(countdown.ToString("n0"));
+                Text.text = string.Format(playTime.ToString("n0"));
             }
             else
             {
@@ -100,7 +130,7 @@ namespace Photon.Pun.UtilityScripts
             }
 
             // 게임 종료
-            if (countdown < 0 && !flag)
+            if (playTime < 0 && !flag)
             {
                 flag = true;
                 // 모두 멈추게하고 승리 UI 띄우고
@@ -121,7 +151,7 @@ namespace Photon.Pun.UtilityScripts
                 {
                     if (teamA > teamB)
                         winPanel.SetActive(true);
-                    else if(teamA == teamB)
+                    else if (teamA == teamB)
                         drawPanel.SetActive(true);
                     else
                         losePanel.SetActive(true);
