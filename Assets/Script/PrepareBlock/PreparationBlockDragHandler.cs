@@ -67,7 +67,8 @@ public class PreparationBlockDragHandler : MonoBehaviour, IDragHandler, IEndDrag
                 this.UpdateDraggedPosition(eventData);
             else
             {
-                //OnEndDrag(eventData);
+                transform.position = initPosition;
+                m_DragHasBegan = false;
             }
         }
 
@@ -83,7 +84,7 @@ public class PreparationBlockDragHandler : MonoBehaviour, IDragHandler, IEndDrag
     {
 
         // Reset the drag begin bool
-        this.m_DragHasBegan = false;
+        m_DragHasBegan = false;
 
         // 초기 위치로 이동
         transform.position = initPosition;
@@ -95,7 +96,7 @@ public class PreparationBlockDragHandler : MonoBehaviour, IDragHandler, IEndDrag
         var rt = this.transform.GetComponent<RectTransform>();
         Vector3 globalMousePos;
 
-        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(this.m_CurrentDraggingPlane, data.position, data.pressEventCamera, out globalMousePos))
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(m_CurrentDraggingPlane, data.position, data.pressEventCamera, out globalMousePos))
         {
             rt.position = globalMousePos;
             rt.rotation = this.m_CurrentDraggingPlane.rotation;
@@ -108,15 +109,14 @@ public class PreparationBlockDragHandler : MonoBehaviour, IDragHandler, IEndDrag
     /// <param name="range">제한 범위</param>
     private bool CheckOutOfRanage(float range)
     {
-        print("transform.position.x : " + transform.position.x);
-        print("initPosition.x - range && transform.position.x  : " + (initPosition.x - range));
         // 좌우변 체크
-        if (transform.position.x < initPosition.x - range && transform.position.x > initPosition.x + range)
+        if (transform.position.x < initPosition.x - range || transform.position.x > initPosition.x + range)
         {
-            
             return true;
         }
-        if (transform.position.y < initPosition.y - range && transform.position.y > initPosition.y + range)
+
+        // 상하변 체크
+        if (transform.position.y < initPosition.y - range || transform.position.y > initPosition.y + range)
             return true;
 
         return false;
