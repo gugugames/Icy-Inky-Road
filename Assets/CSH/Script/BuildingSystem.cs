@@ -21,7 +21,7 @@ using UnityEngine.UI;
 
 namespace ClientLibrary
 {
-    public class BuildingSystem : MonoBehaviourPun
+    public class BuildingSystem : PreparationBlockSlotDragHandler
     {
         private Grid grid;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PreparationBlockDragHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler {
+public class PreparationBlockSlotDragHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler {
 
     //slot 오브젝트가 벗어 날 수 있는 범위
     public float m_range;
@@ -91,6 +91,10 @@ public class PreparationBlockDragHandler : MonoBehaviour, IDragHandler, IEndDrag
 
     }
 
+    /// <summary>
+    /// 드래그시 오브젝트의 position과 해당 plane 에 맞게 rotation되는 메서드
+    /// </summary>
+    /// <param name="data"></param>
     private void UpdateDraggedPosition(PointerEventData data)
     {
         var rt = this.transform.GetComponent<RectTransform>();
