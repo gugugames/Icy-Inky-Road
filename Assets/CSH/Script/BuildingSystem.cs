@@ -21,7 +21,7 @@ using UnityEngine.UI;
 
 namespace ClientLibrary
 {
-    public class BuildingSystem : PreparationBlockSlotDragHandler
+    public class BuildingSystem : MonoBehaviourPun
     {
         private Grid grid;
 
@@ -59,7 +59,7 @@ namespace ClientLibrary
         public Button tempButton1;      //Button 빌딩모드 시작/해제 버튼
         public Button tempButton2;      //Button 벽 생성 확정 버튼
 
-        
+        private GameObject preparationBlockSlot;
 
         //임시변수 나중에 수정함
         Vector3 temp;
@@ -72,6 +72,10 @@ namespace ClientLibrary
             }
             else
             {
+                //
+                preparationBlockSlot = Resources.Load("Prefabs/PreparationBlockSlot") as GameObject;
+                //
+                InstantiatePreparationBlockSlot();
                 //PrepareBlockSlot = GameObject.Find("SkillCanvas/PrepareBlockPanel").transform.GetComponent<PrepareBlockManager>();
 
                 //빌딩모드 시작/해제 버튼
@@ -90,12 +94,14 @@ namespace ClientLibrary
                 grid = FindObjectOfType<Grid>();
                 bSys = GetComponent<BlockSystem>();
                 playerCamera = FindObjectOfType<Camera>();
+
             }
         }
 
         //빌딩모드 시작 메서드
         public void StartBuildingMode()
         {
+            print("DD");
             //모바일 환경에서 동작하는 부분
 #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
             buildModeOn = !buildModeOn;
@@ -110,11 +116,11 @@ namespace ClientLibrary
                     Cursor.lockState = CursorLockMode.None;
                 }
 #endif
-                //에디터 환경에서 동작하는 부분
+            //에디터 환경에서 동작하는 부분
 #if UNITY_EDITOR || UNITY_EDITOR_WIN || UNITY_STANDALONE || UNITY_WEBPLAYER
             //if (Input.GetKeyDown("e"))
             //{
-                buildModeOn = !buildModeOn;
+            buildModeOn = !buildModeOn;
 
                 if (buildModeOn)
                 {
@@ -152,7 +158,6 @@ namespace ClientLibrary
                         temp = point;
                         buildPos = PlaceCubeNear(point);
                         buildPos.y = 0;
-
                     }
                     else
                     {
@@ -254,6 +259,30 @@ namespace ClientLibrary
             var finalPosition = grid.GetNearestPointOnGrid(clickPoint);
             
             return finalPosition;
+        }
+
+        /// <summary>
+        /// InstantiatePreparationBlockSlot object 를 생성한다.
+        /// 
+        /// 1. PreparationBlockSlotDragHandler.buildingSystem 변수에 this연결
+        /// </summary>
+        public void InstantiatePreparationBlockSlot()
+        {
+            Canvas canvas = FindObjectOfType<Canvas>();
+
+            if (canvas == null)
+                return;
+
+            //slot 생성
+            GameObject slot = Instantiate(preparationBlockSlot, canvas.transform.Find("PreparationBlockPanel/Border/PreparationBlockSlots"));
+
+            //slot buildingsystem 변수에 this 연결
+            slot.GetComponent<PreparationBlockSlotDragHandler>().buildingSystem = transform.GetComponent<BuildingSystem>();
+
+            print("slot : " + slot);
+
+
+
         }
     }
 }

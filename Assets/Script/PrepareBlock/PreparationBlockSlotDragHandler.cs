@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PreparationBlockSlotDragHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler {
+/// <summary>
+/// PreparationBlockSlots 안의 Slot에 적용하는 Component
+/// slot의 드래그 및 템플릭 Block 생성을 관장한다.
+/// </summary>
+public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndDragHandler, IBeginDragHandler {
 
     //slot 오브젝트가 벗어 날 수 있는 범위
     public float m_range;
+
+    //이 스크립트가 적용되는 slot
+    public GameObject preparationBlockPanel;
 
     // Slot에 저장돼 있는 오브젝트
     public GameObject m_SlotObject;
@@ -19,6 +26,15 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour, IDragHandler, IEnd
 
     private bool m_DragHasBegan = false;
 
+    public ClientLibrary.BuildingSystem buildingSystem;
+
+
+    private void Start()
+    {
+        buildingSystem = transform.parent.parent.parent.GetComponent<ClientLibrary.BuildingSystem>();
+        print(buildingSystem);
+    }
+    
 
     /// <summary>
     /// 오브젝트가 눌렸을때 실행되는 메서드
@@ -67,6 +83,9 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour, IDragHandler, IEnd
                 this.UpdateDraggedPosition(eventData);
             else
             {
+                print("buildingSystem" + buildingSystem);
+                buildingSystem.StartBuildingMode();
+
                 transform.position = initPosition;
                 m_DragHasBegan = false;
             }
@@ -125,16 +144,4 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour, IDragHandler, IEnd
 
         return false;
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    
 }
