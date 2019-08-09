@@ -11,6 +11,8 @@ namespace ClientLibrary
 {
     public class PlayerCtrl : MonoBehaviourPun
     {
+        public static PlayerCtrl instance;
+
         public enum PlayerTeam
         {
             empty,
@@ -59,7 +61,7 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
         void Awake()
         {
             //Check if instance already exists
-            /*if (instance == null)
+            if (instance == null)
 
                 //if not, set instance to this
                 instance = this;
@@ -68,7 +70,7 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
             else if (instance != this)
 
                 //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
-                Destroy(gameObject);*/
+                Destroy(gameObject);
         }
 
         [PunRPC]
@@ -86,6 +88,8 @@ private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen t
             transform.Find("Particle System").GetComponent<ParticlePainter>().brush.splatChannel = 1;
             GetComponent<Renderer>().material.color = new Color(0, 0, 255);
         }
+
+        
 
         private void Start()
         {

@@ -21,8 +21,14 @@ using UnityEngine.UI;
 
 namespace ClientLibrary
 {
-    public class BuildingSystem : PreparationBlockSlotDragHandler
+    public class BuildingSystem : MonoBehaviourPun
     {
+        #region singleton
+        public static BuildingSystem instance;
+        #endregion
+
+
+
         private Grid grid;
 
         private BlockSystem bSys;
@@ -63,6 +69,23 @@ namespace ClientLibrary
 
         //임시변수 나중에 수정함
         Vector3 temp;
+
+        private void Awake()
+        {
+            #region singleton
+            //Check if instance already exists
+            if (instance == null)
+
+                //if not, set instance to this
+                instance = this;
+
+            //If instance already exists and it's not this:
+            else if (instance != this)
+
+                //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+                Destroy(gameObject);
+            #endregion
+        }
 
         private void Start() {
             //서버에서 자기 자신을 제외한 다른 플레이어의 접근 제한
