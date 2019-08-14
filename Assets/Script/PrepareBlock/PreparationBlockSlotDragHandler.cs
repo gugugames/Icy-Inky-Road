@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using ClientLibrary;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -26,15 +27,27 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
 
     private bool m_DragHasBegan = false;
 
-    public ClientLibrary.BuildingSystem buildingSystem;
+    private ClientLibrary.BuildingSystem buildingSystem;
 
+    public BuildingSystem BuildingSystem
+    {
+        get {
+            return buildingSystem;
+        }
+
+        set {
+            buildingSystem = value;
+        }
+    }
 
     private void Start()
     {
-        buildingSystem = transform.parent.parent.parent.GetComponent<ClientLibrary.BuildingSystem>();
-        print(buildingSystem);
+        //BuildingSystem = transform.parent.parent.parent.GetComponent<ClientLibrary.BuildingSystem>();
+        //print(BuildingSystem);
     }
     
+
+
 
     /// <summary>
     /// 오브젝트가 눌렸을때 실행되는 메서드
@@ -83,8 +96,7 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
                 this.UpdateDraggedPosition(eventData);
             else
             {
-                print("buildingSystem" + buildingSystem);
-                buildingSystem.StartBuildingMode();
+                BuildingSystem.StartBuildingMode();
 
                 transform.position = initPosition;
                 m_DragHasBegan = false;

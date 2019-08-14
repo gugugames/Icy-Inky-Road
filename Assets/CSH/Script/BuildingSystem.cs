@@ -51,7 +51,7 @@ namespace ClientLibrary
 
         private bool isDrag = false;                    //드래그 중인지 여부 저장 : true = 드래그중 / false = 드래그 해제
         private Vector3 dragPos;                //초기 드래그 위치를 저장
-        private Vector3 dragPosition;           //드래그된 위치를 PlaceCubeNear를 거쳐 저장
+        private Vector3? dragPosition;           //드래그된 위치를 PlaceCubeNear를 거쳐 저장
         private Vector3 initPlayerPosition;     //초기플레이어 위치
 
         private PrepareBlockManager PrepareBlockSlot; //씬에 생성된 PrepareBlockSlot
@@ -94,7 +94,6 @@ namespace ClientLibrary
                 grid = FindObjectOfType<Grid>();
                 bSys = GetComponent<BlockSystem>();
                 playerCamera = FindObjectOfType<Camera>();
-
             }
         }
 
@@ -197,24 +196,35 @@ namespace ClientLibrary
                         initPlayerPosition.z = currentTemplateBlock.transform.position.z;
 
                         //currentTemplateBlock.transform.position = buildPos;
-                        print("AA");
+                        print("ClickDown");
                     }
 
                     if (Input.GetMouseButton(0))
                     {
-                        currentTemplateBlock.transform.position = dragPosition;
+                        currentTemplateBlock.transform.position = dragPosition.Value;
                     }
 
                     //버튼 땠을때 드래그 감지 해제
                     if (Input.GetMouseButtonUp(0))
                     {
-                        currentTemplateBlock.transform.position = dragPosition;
+                        currentTemplateBlock.transform.position = dragPosition.Value;
                         isDrag = false;
-                        print("BB");
+                        print("ClickUp");
                     }
 
                     if (isDrag)
                     {
+                        //dragPosition에 캔버스 위치와 월드 위치를 변환한 값을 넣어줌
+                        dragPosition = ConvertRectToWorld();
+
+                        //dragPosition에 null이 들어갔을 때 예외처리
+                        if(dragPosition == null)
+                        {
+
+                        }
+
+                        //큐브 올려놓고 이동하는 방식
+                        /*
                         //클릭다운된 좌표와 클릭업 된 좌표의 값을 빼서 임의의 값으로 나누어 currentTemplateBlock에 더해줌
                         //0.001f 값은 grid 메서드에서 근사치 오류 때문에 더해줌
                         dragPosition = PlaceCubeNear(new Vector3(
@@ -222,6 +232,7 @@ namespace ClientLibrary
                             0.5f,
                             initPlayerPosition.z + (Input.mousePosition.y - dragPos.y) / 50.0f + 0.001f
                             ));
+                        */
                     }
 
                     //블락 설치 버튼
@@ -232,6 +243,28 @@ namespace ClientLibrary
                 }
             }
         }
+
+        /// <summary>
+        /// 스크린에 클릭된 좌표를 월드 좌표로 변환
+        /// </summary>
+        /// <returns></returns>
+        private Vector3? ConvertRectToWorld()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(ray, out hitInfo, 100f))
+            {
+                return hitInfo.point;
+            }
+            else
+            {
+                return null;
+            }
+                
+        }
+
         private void CanclePlaceBlock()
         {
             canBuild = false;
@@ -277,7 +310,7 @@ namespace ClientLibrary
             GameObject slot = Instantiate(preparationBlockSlot, canvas.transform.Find("PreparationBlockPanel/Border/PreparationBlockSlots"));
 
             //slot buildingsystem 변수에 this 연결
-            slot.GetComponent<PreparationBlockSlotDragHandler>().buildingSystem = transform.GetComponent<BuildingSystem>();
+            slot.GetComponent<PreparationBlockSlotDragHandler>().BuildingSystem = transform.GetComponent<BuildingSystem>();
 
             print("slot : " + slot);
 
