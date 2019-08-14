@@ -120,6 +120,8 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
         // 초기 위치로 이동
         transform.position = initPosition;
 
+        buildingSystem.isDrag = false;
+
     }
 
     /// <summary>

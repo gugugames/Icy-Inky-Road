@@ -49,7 +49,7 @@ namespace ClientLibrary
         [SerializeField]
         private Material templateMaterial;      //생성할 템플릿 메테리얼을 저장
 
-        private bool isDrag = false;                    //드래그 중인지 여부 저장 : true = 드래그중 / false = 드래그 해제
+        public bool isDrag = false;                    //드래그 중인지 여부 저장 : true = 드래그중 / false = 드래그 해제
         private Vector3 dragPos;                //초기 드래그 위치를 저장
         private Vector3? dragPosition;           //드래그된 위치를 PlaceCubeNear를 거쳐 저장
         private Vector3 initPlayerPosition;     //초기플레이어 위치
@@ -72,6 +72,13 @@ namespace ClientLibrary
             }
             else
             {
+                //템플릿 블락 생성, 비활성화, 버튼연결, 메테리얼 적용
+                currentTemplateBlock = Instantiate(blockTemplatePrefab, new Vector3(0,0,0), Quaternion.identity);
+                currentTemplateBlock.SetActive(false);
+                currentTemplateBlock.GetComponent<BlockSystem>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
+                currentTemplateBlock.GetComponent<BlockSystem>().cancleButton.onClick.AddListener(() => StartBuildingMode());
+                currentTemplateBlock.GetComponent<MeshRenderer>().material = templateMaterial;
+
                 //
                 preparationBlockSlot = Resources.Load("Prefabs/PreparationBlockSlot") as GameObject;
                 //
@@ -146,99 +153,65 @@ namespace ClientLibrary
                 //E버튼 클릭시 빌딩 모드 실행, 다시 E 클릭시 빌딩모드 해제
                 //StartBuildingMode();
 
+
+
                 if (buildModeOn)
                 {
+                    //RaycastHit buildPosHit;
 
-                    RaycastHit buildPosHit;
+                    //if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out buildPosHit, 10, buildableSurfacesLayer))
+                    //{
+                    //    Vector3 point = buildPosHit.point;
+                    //    temp = point;
+                    //    buildPos = PlaceCubeNear(point);
+                    //    buildPos.y = 0;
+                    //}
+                    //else
+                    //{
+                    //    if (currentTemplateBlock != null)
+                    //        Destroy(currentTemplateBlock.gameObject);
 
-                    if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out buildPosHit, 10, buildableSurfacesLayer))
-                    {
-                        Vector3 point = buildPosHit.point;
-                        temp = point;
-                        buildPos = PlaceCubeNear(point);
-                        buildPos.y = 0;
-                    }
-                    else
-                    {
-                        if (currentTemplateBlock != null)
-                            Destroy(currentTemplateBlock.gameObject);
-
-                    }
+                    //}
                 }
 
                 if (!buildModeOn && currentTemplateBlock != null)
                 {
-                    Destroy(currentTemplateBlock.gameObject);
+                    //Destroy(currentTemplateBlock.gameObject);
+                    currentTemplateBlock.SetActive(false);
                     canBuild = false;
                 }
 
                 //Block 템플릿 실행
-                if (buildModeOn && currentTemplateBlock == null)
+                if (buildModeOn && currentTemplateBlock.activeSelf == false)
                 {
                     //이부분이 빌딩모드때 보이는 가상 블락 실행부분
-                    currentTemplateBlock = Instantiate(blockTemplatePrefab, PlaceCubeNear(buildPos), Quaternion.identity);
-                    currentTemplateBlock.GetComponent<BlockSystem>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
-                    currentTemplateBlock.GetComponent<BlockSystem>().cancleButton.onClick.AddListener(() => StartBuildingMode());
-                    currentTemplateBlock.GetComponent<MeshRenderer>().material = templateMaterial;
-                    print("CC");
+                    currentTemplateBlock.SetActive(true);
+                    isDrag = true;
+
+                    print("ClickDown");
                 }
                 //canBuild
 
-                if (canBuild && currentTemplateBlock != null)
+                if (canBuild && currentTemplateBlock.activeSelf== true)
                 {
-                    //currentTemplateBlock.transform.position = PlaceCubeNear(buildPos);
-                    //버튼 눌렀을때 드래그 감지
-                    if (Input.GetMouseButtonDown(0))
+                    
+
+                    if (isDrag == true)
                     {
-                        isDrag = true;
-                        dragPos = Input.mousePosition;
-                        initPlayerPosition.x = currentTemplateBlock.transform.position.x;
-                        initPlayerPosition.z = currentTemplateBlock.transform.position.z;
+                        //드래그 중 템플릿 블락 움직임
+                        currentTemplateBlock.transform.position = PlaceCubeNear(ConvertRectToWorld().Value);
 
-                        //currentTemplateBlock.transform.position = buildPos;
-                        print("ClickDown");
-                    }
-
-                    if (Input.GetMouseButton(0))
-                    {
-                        currentTemplateBlock.transform.position = dragPosition.Value;
-                    }
-
-                    //버튼 땠을때 드래그 감지 해제
-                    if (Input.GetMouseButtonUp(0))
-                    {
-                        currentTemplateBlock.transform.position = dragPosition.Value;
-                        isDrag = false;
-                        print("ClickUp");
-                    }
-
-                    if (isDrag)
-                    {
-                        //dragPosition에 캔버스 위치와 월드 위치를 변환한 값을 넣어줌
-                        dragPosition = ConvertRectToWorld();
-
-                        //dragPosition에 null이 들어갔을 때 예외처리
-                        if(dragPosition == null)
+                        if (dragPosition == null)
                         {
 
                         }
-
-                        //큐브 올려놓고 이동하는 방식
-                        /*
-                        //클릭다운된 좌표와 클릭업 된 좌표의 값을 빼서 임의의 값으로 나누어 currentTemplateBlock에 더해줌
-                        //0.001f 값은 grid 메서드에서 근사치 오류 때문에 더해줌
-                        dragPosition = PlaceCubeNear(new Vector3(
-                            initPlayerPosition.x + (Input.mousePosition.x - dragPos.x) / 50.0f + 0.001f,
-                            0.5f,
-                            initPlayerPosition.z + (Input.mousePosition.y - dragPos.y) / 50.0f + 0.001f
-                            ));
-                        */
                     }
 
-                    //블락 설치 버튼
-                    if (Input.GetMouseButtonDown(2))
+                    //버튼 땠을때 드래그 감지 해제
+                    if (isDrag == false)
                     {
-                        
+                        currentTemplateBlock.transform.position = dragPosition.Value;
+                        print("ClickUp");
                     }
                 }
             }
@@ -269,7 +242,8 @@ namespace ClientLibrary
         {
             canBuild = false;
 
-            Destroy(currentTemplateBlock);
+            currentTemplateBlock.SetActive(false);
+            //Destroy(currentTemplateBlock);
         }
 
         private void PhotonPlaceBlock()
@@ -313,9 +287,6 @@ namespace ClientLibrary
             slot.GetComponent<PreparationBlockSlotDragHandler>().BuildingSystem = transform.GetComponent<BuildingSystem>();
 
             print("slot : " + slot);
-
-
-
         }
     }
 }
