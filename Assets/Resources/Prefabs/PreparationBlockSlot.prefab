@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 114938690042553198}
   - component: {fileID: 114926905917687040}
   m_Layer: 5
-  m_Name: PreparationBlockSlots
+  m_Name: PreparationBlockSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
