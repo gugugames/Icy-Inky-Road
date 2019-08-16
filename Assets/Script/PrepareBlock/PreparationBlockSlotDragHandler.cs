@@ -97,7 +97,7 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
             else
             {
                 //생성된 오브젝트 움직임
-                BuildingSystem.StartBuildingMode();
+                BuildingSystem.SwitchBuildingMode();
 
                 //해당 UI 원래 위치로 이동
                 transform.position = initPosition;
@@ -127,6 +127,11 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
         //생성된 오브젝트 움직임 권한 해제
         buildingSystem.isDrag = false;
 
+        //빌딩 모드 해제
+        buildingSystem.SwitchBuildingMode();
+
+        //생성된 오브젝트를 빌딩 시스템의 블락 스토리지에 추가
+        buildingSystem.BlockTemplateStorage = buildingSystem.currentTemplateBlock; 
     }
 
     /// <summary>

@@ -34,16 +34,14 @@ namespace ClientLibrary
 
         private bool canBuild = false;      //true = 빌딩 가능 / false 빌딩 불가능
 
-        static public int limitBlocksInstallation = 5; //설치 가능한 최대 블락수
 
-        private int countInstalledBlock = 0;
 
         [SerializeField]
         private LayerMask buildableSurfacesLayer;
 
         private Vector3 buildPos;
 
-        private GameObject currentTemplateBlock;//빌딩 모드중 생성된 templateBlock을 저장함
+        public GameObject currentTemplateBlock;//빌딩 모드중 생성된 templateBlock을 저장함
 
 
 
@@ -52,7 +50,6 @@ namespace ClientLibrary
         [SerializeField]
         private GameObject blockPrefab;         //instantiate 될 block
 
-        private Stack<GameObject> blockTemplateStorage = new Stack<GameObject>();
 
         [SerializeField]
         private Material templateMaterial;      //생성할 템플릿 메테리얼을 저장
@@ -69,12 +66,21 @@ namespace ClientLibrary
 
         private GameObject preparationBlockSlot;
 
+        public GameObject templatePrefab;
 
         //임시변수 나중에 수정함
         Vector3 temp;
 
-        public GameObject BlockTemplateStorage
+        static public int limitBlocksInstallation = 5; //설치 가능한 최대 블럭 수
+
+        private int countInstalledBlock = 0; //설치된 블럭 수
+
+        private Stack<GameObject> blockTemplateStorage = new Stack<GameObject>(); //블락 템플릿 블럭들을 저장
+
+        //blockTemplateStorage 변수에 접근하기 위한 프로퍼티
+        public GameObject BlockTemplateStorage 
         {
+           
             get {
                 if (countInstalledBlock <= 0)
                 {
@@ -87,12 +93,13 @@ namespace ClientLibrary
             set {
                 if(countInstalledBlock < limitBlocksInstallation)
                 {
+
                     countInstalledBlock++;
-                    blockTemplateStorage.Push(value);
+                    blockTemplateStorage.Push(Instantiate(value, value.transform.position, Quaternion.identity));
                 }
                 else
                 {
-                    Debug.Log("블락 제한 수 보다 많이 설치됨");
+                    Debug.Log("블럭 제한 수 보다 많이 설치됨");
                 }
             }
         }
@@ -106,11 +113,11 @@ namespace ClientLibrary
             }
             else
             {
+
                 //템플릿 블락 생성, 비활성화, 버튼연결, 메테리얼 적용
                 currentTemplateBlock = Instantiate(blockTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
                 currentTemplateBlock.SetActive(false);
-                currentTemplateBlock.GetComponent<BlockSystem>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
-                currentTemplateBlock.GetComponent<BlockSystem>().cancleButton.onClick.AddListener(() => StartBuildingMode());
+                //AddListenerBlock();
                 currentTemplateBlock.GetComponent<MeshRenderer>().material = templateMaterial;
 
                 //
@@ -127,10 +134,10 @@ namespace ClientLibrary
 
                 //빌딩모드 시작/해제 버튼 메서드 연결
                 //임시 연결 부분 나중에 동적으로 연결되게 설정해야됨
-                PrepareBlockManager.instance.GetBlockSlot(0).onClick.AddListener(() => StartBuildingMode());
+                PrepareBlockManager.instance.GetBlockSlot(0).onClick.AddListener(() => SwitchBuildingMode());
 
                 //벽 생성 확정 버튼 메서드 연결
-                //tempButton2.onClick.AddListener(() => PlaceBlock());
+                tempButton2.onClick.AddListener(() => PlaceBlock());
 
                 grid = FindObjectOfType<Grid>();
                 bSys = GetComponent<BlockSystem>();
@@ -138,8 +145,18 @@ namespace ClientLibrary
             }
         }
 
+        /// <summary>
+        /// 블락 좌우 버튼
+        /// 설치 확정, 취소 버튼에 이벤트 Add
+        /// </summary>
+        private void AddListenerBlock()
+        {
+            currentTemplateBlock.GetComponent<BlockSystem>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
+            currentTemplateBlock.GetComponent<BlockSystem>().cancleButton.onClick.AddListener(() => SwitchBuildingMode());
+        }
+
         //빌딩모드 시작 메서드
-        public void StartBuildingMode()
+        public void SwitchBuildingMode()
         {
             print("DD");
             //모바일 환경에서 동작하는 부분
@@ -277,20 +294,27 @@ namespace ClientLibrary
             //Destroy(currentTemplateBlock);
         }
 
-        private void PhotonPlaceBlock()
+        public void PhotonPlaceBlock()
         {
             photonView.RPC("PlaceBlock", RpcTarget.All);
         }
 
-        //블락위치를 확정하여 생성함
+        /// <summary>
+        /// 스택에 쌓인 블락을 해당 위치에 생성
+        /// </summary>
         [PunRPC]
         private void PlaceBlock()
         {
-            if (canBuild && currentTemplateBlock != null)
+            while(countInstalledBlock > 0)
             {
-                //빌딩 모드에서 마우스 좌클릭시 블락 설치되는 부분 
-                GameObject newBlock = PhotonNetwork.Instantiate(blockPrefab.name, currentTemplateBlock.transform.position, Quaternion.identity);
+                PhotonNetwork.Instantiate(blockPrefab.name, BlockTemplateStorage.transform.position, Quaternion.identity);
+                print("countInstalledBlock" + countInstalledBlock);
             }
+            //if (canBuild && currentTemplateBlock != null)
+            //{
+            //    //빌딩 모드에서 마우스 좌클릭시 블락 설치되는 부분 
+            //    GameObject newBlock = PhotonNetwork.Instantiate(blockPrefab.name, currentTemplateBlock.transform.position, Quaternion.identity);
+            //}
         }
 
         //Grid.cs 에서 클릭된 포지션의 grid 근삿값을 리턴함
@@ -321,7 +345,6 @@ namespace ClientLibrary
 
             print("slot : " + slot);
         }
-
 
     }
 }
