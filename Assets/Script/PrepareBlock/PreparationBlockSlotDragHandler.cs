@@ -108,7 +108,7 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
         }
 
     }
-
+    
     /// <summary>
     /// 오브젝트 드래그를 해제 했을 때 실행되는 메서드
     /// 일정 범위 안에서 드래그를 해제 : 오브젝트 생성 x 이미지만 돌아온다.
