@@ -21,12 +21,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ClientLibrary
 {
 
-    public class BlockSystem : MonoBehaviour
+    public class BlockSystem : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
     {
         public Button checkButton;
         public Button cancleButton;
@@ -44,6 +45,21 @@ namespace ClientLibrary
                 allBlocks[i] = newBlock;
                 //Debug.Log("Block added to dictionary " + allBlocks[i].blockName);
             }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+
         }
     }
 

@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace ClientLibrary
 {
@@ -33,25 +34,32 @@ namespace ClientLibrary
 
         private bool canBuild = false;      //true = 빌딩 가능 / false 빌딩 불가능
 
+        static public int limitBlocksInstallation = 5; //설치 가능한 최대 블락수
+
+        private int countInstalledBlock = 0;
 
         [SerializeField]
         private LayerMask buildableSurfacesLayer;
 
         private Vector3 buildPos;
 
-        private GameObject currentTemplateBlock;//빌딩 모드중 생서된 templateBlock을 저장함
+        private GameObject currentTemplateBlock;//빌딩 모드중 생성된 templateBlock을 저장함
+
+
 
         [SerializeField]
         private GameObject blockTemplatePrefab; //templateBlock
         [SerializeField]
         private GameObject blockPrefab;         //instantiate 될 block
 
+        private Stack<GameObject> blockTemplateStorage = new Stack<GameObject>();
+
         [SerializeField]
         private Material templateMaterial;      //생성할 템플릿 메테리얼을 저장
 
         public bool isDrag = false;                    //드래그 중인지 여부 저장 : true = 드래그중 / false = 드래그 해제
         private Vector3 dragPos;                //초기 드래그 위치를 저장
-        private Vector3? dragPosition;           //드래그된 위치를 PlaceCubeNear를 거쳐 저장
+        private Vector3 dragPosition;           //드래그된 위치를 PlaceCubeNear를 거쳐 저장
         private Vector3 initPlayerPosition;     //초기플레이어 위치
 
         private PrepareBlockManager PrepareBlockSlot; //씬에 생성된 PrepareBlockSlot
@@ -61,10 +69,36 @@ namespace ClientLibrary
 
         private GameObject preparationBlockSlot;
 
+
         //임시변수 나중에 수정함
         Vector3 temp;
 
-        private void Start() {
+        public GameObject BlockTemplateStorage
+        {
+            get {
+                if (countInstalledBlock <= 0)
+                {
+                    throw new System.ArgumentNullException();
+                }
+                countInstalledBlock--;
+                return blockTemplateStorage.Pop();
+            }
+
+            set {
+                if(countInstalledBlock < limitBlocksInstallation)
+                {
+                    countInstalledBlock++;
+                    blockTemplateStorage.Push(value);
+                }
+                else
+                {
+                    Debug.Log("블락 제한 수 보다 많이 설치됨");
+                }
+            }
+        }
+
+        private void Start()
+        {
             //서버에서 자기 자신을 제외한 다른 플레이어의 접근 제한
             if (!photonView.IsMine)
             {
@@ -73,7 +107,7 @@ namespace ClientLibrary
             else
             {
                 //템플릿 블락 생성, 비활성화, 버튼연결, 메테리얼 적용
-                currentTemplateBlock = Instantiate(blockTemplatePrefab, new Vector3(0,0,0), Quaternion.identity);
+                currentTemplateBlock = Instantiate(blockTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
                 currentTemplateBlock.SetActive(false);
                 currentTemplateBlock.GetComponent<BlockSystem>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
                 currentTemplateBlock.GetComponent<BlockSystem>().cancleButton.onClick.AddListener(() => StartBuildingMode());
@@ -97,7 +131,7 @@ namespace ClientLibrary
 
                 //벽 생성 확정 버튼 메서드 연결
                 //tempButton2.onClick.AddListener(() => PlaceBlock());
-                
+
                 grid = FindObjectOfType<Grid>();
                 bSys = GetComponent<BlockSystem>();
                 playerCamera = FindObjectOfType<Camera>();
@@ -128,22 +162,24 @@ namespace ClientLibrary
             //{
             buildModeOn = !buildModeOn;
 
-                if (buildModeOn)
-                {
-                    canBuild = true;
-                }
-                else
-                {
-                    canBuild = false;
-                    Cursor.lockState = CursorLockMode.None;
-                }
+            if (buildModeOn)
+            {
+                canBuild = true;
+            }
+            else
+            {
+                canBuild = false;
+                Cursor.lockState = CursorLockMode.None;
+            }
             //}
 #endif
         }
 
-        
 
-        private void Update() {
+
+
+        private void Update()
+        {
             if (!photonView.IsMine)
             {
                 return;
@@ -192,25 +228,20 @@ namespace ClientLibrary
                 }
                 //canBuild
 
-                if (canBuild && currentTemplateBlock.activeSelf== true)
+                if (canBuild && currentTemplateBlock.activeSelf == true)
                 {
-                    
+
 
                     if (isDrag == true)
                     {
                         //드래그 중 템플릿 블락 움직임
                         currentTemplateBlock.transform.position = PlaceCubeNear(ConvertRectToWorld().Value);
-
-                        if (dragPosition == null)
-                        {
-
-                        }
                     }
 
                     //버튼 땠을때 드래그 감지 해제
                     if (isDrag == false)
                     {
-                        currentTemplateBlock.transform.position = dragPosition.Value;
+                        currentTemplateBlock.transform.position = dragPosition;
                         print("ClickUp");
                     }
                 }
@@ -235,7 +266,7 @@ namespace ClientLibrary
             {
                 return null;
             }
-                
+
         }
 
         private void CanclePlaceBlock()
@@ -253,7 +284,8 @@ namespace ClientLibrary
 
         //블락위치를 확정하여 생성함
         [PunRPC]
-        private void PlaceBlock() {
+        private void PlaceBlock()
+        {
             if (canBuild && currentTemplateBlock != null)
             {
                 //빌딩 모드에서 마우스 좌클릭시 블락 설치되는 부분 
@@ -262,9 +294,10 @@ namespace ClientLibrary
         }
 
         //Grid.cs 에서 클릭된 포지션의 grid 근삿값을 리턴함
-        private Vector3 PlaceCubeNear(Vector3 clickPoint) {
+        private Vector3 PlaceCubeNear(Vector3 clickPoint)
+        {
             var finalPosition = grid.GetNearestPointOnGrid(clickPoint);
-            
+
             return finalPosition;
         }
 
@@ -288,5 +321,7 @@ namespace ClientLibrary
 
             print("slot : " + slot);
         }
+
+
     }
 }

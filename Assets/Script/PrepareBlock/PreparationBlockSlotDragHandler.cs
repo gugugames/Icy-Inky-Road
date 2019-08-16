@@ -96,9 +96,13 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
                 this.UpdateDraggedPosition(eventData);
             else
             {
+                //생성된 오브젝트 움직임
                 BuildingSystem.StartBuildingMode();
 
+                //해당 UI 원래 위치로 이동
                 transform.position = initPosition;
+
+                //해당 UI 드래그 권한 해제
                 m_DragHasBegan = false;
             }
         }
@@ -119,7 +123,8 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
 
         // 초기 위치로 이동
         transform.position = initPosition;
-
+        
+        //생성된 오브젝트 움직임 권한 해제
         buildingSystem.isDrag = false;
 
     }
