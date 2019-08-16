@@ -15,11 +15,11 @@
 
 using UnityEngine;
 using UnityEngine.UI;
-
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using System;
 using ClientLibrary;
+using System.Collections;
 
 namespace Photon.Pun.UtilityScripts
 {
@@ -41,7 +41,7 @@ namespace Photon.Pun.UtilityScripts
                 return m_instance;
             }
         }
-
+        
         private static CountdownTimer m_instance; // 싱글톤이 할당될 static 변수
         private float startTime;
 
@@ -53,7 +53,7 @@ namespace Photon.Pun.UtilityScripts
         public Text AScore;
         public Text BScore;
 
-        bool flag = false;
+        bool ending = false; //false : 진행중 true : 게임종료
 
         PlayerCtrl[] player;
         ClientLibrary.Grid grid;
@@ -67,11 +67,20 @@ namespace Photon.Pun.UtilityScripts
         [Header("Preparation time in seconds")]
         public float PREPARATION_TIME = 30.0F;
 
-        public float preparationTime = 30; //준비 제한 시간
-        public float playTime = 60; //게임 플레이 제한 시간
+        private float preparationTime = 0; //준비 제한 시간
+        private float playTime = 0; //게임 플레이 제한 시간
 
         public void Start()
         {
+            //윈,루즈,드로우 판넬에 게임종료 메서드 삽입
+            winPanel.GetComponent<Button>().onClick.AddListener(() => LeaveRoom());
+            losePanel.GetComponent<Button>().onClick.AddListener(() => LeaveRoom());
+            drawPanel.GetComponent<Button>().onClick.AddListener(() => LeaveRoom());
+
+
+            //playtime 초기화
+            PLAY_TIME = PREPARATION_TIME + 60;
+
             if (Text == null)
             {
                 Debug.LogError("Reference to 'Text' is not set. Please set a valid reference.", this);
@@ -80,37 +89,38 @@ namespace Photon.Pun.UtilityScripts
             startTime = (float)PhotonNetwork.Time;
 
             grid = FindObjectOfType<ClientLibrary.Grid>();
+
+            //타이머 실행
+            StartCoroutine(PreparationTimer());
         }
 
-        public void Update()
+        /// <summary>
+        /// 블락 설치 대기 시간동안 돌아가는 메서드
+        /// 시간 종료후 PlayTimer 코루틴 실행
+        /// </summary>
+        public IEnumerator PreparationTimer()
         {
-
-            if (preparationTime > 0)
+            do
             {
-                PreparationTimer();
-            }
-            else if (playTime > 0)
-            {
-                PlayTimer();
-            }
-        }
-
-        //블락 설치 대기 시간동안 돌아가는 메서드
-        public void PreparationTimer()
-        {
-            if(preparationTime > 0)
-            {
-                
                 float timer = (float)PhotonNetwork.Time - startTime;
                 preparationTime = PREPARATION_TIME - timer;
 
                 Text.text = string.Format(preparationTime.ToString("n0"));
-            }
+
+                yield return new WaitForSeconds(0.1f);
+            } while (preparationTime > 0);
+
+            StartCoroutine(PlayTimer());
         }
 
-        public void PlayTimer()
+        /// <summary>
+        /// 플레이시 타이머 카운트다운
+        /// 타이머 카운트 다운 종료 후 EndGame 호출
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator PlayTimer()
         {
-            if (playTime > 0)
+            do
             {
                 AScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreA"].ToString();
                 BScore.text = PhotonNetwork.MasterClient.CustomProperties["ScoreB"].ToString();
@@ -119,20 +129,27 @@ namespace Photon.Pun.UtilityScripts
                 playTime = PLAY_TIME - timer;
 
                 Text.text = string.Format(playTime.ToString("n0"));
-            }
-            else
-            {
-                if (Input.anyKeyDown)
-                {
-                    PhotonNetwork.LeaveRoom();
-                    PhotonNetwork.LoadLevel(0);
-                }
-            }
 
+                yield return new WaitForSeconds(0.1f);
+            } while (playTime > 0);
+
+            EndGame();
+
+            yield return null;
+        }
+
+        public void LeaveRoom()
+        {
+            PhotonNetwork.LeaveRoom();
+            PhotonNetwork.LoadLevel(0);
+        }
+
+        public void EndGame()
+        {
             // 게임 종료
-            if (playTime < 0 && !flag)
+            if (playTime < 0 && !ending)
             {
-                flag = true;
+                ending = true;
                 // 모두 멈추게하고 승리 UI 띄우고
                 player = FindObjectsOfType<PlayerCtrl>();
 
