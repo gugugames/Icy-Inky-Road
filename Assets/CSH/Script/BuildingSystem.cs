@@ -19,6 +19,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 namespace ClientLibrary
 {
@@ -26,7 +27,7 @@ namespace ClientLibrary
     {
         private Grid grid;
 
-        private BlockSystem bSys;
+        private BlockInfo bSys;
 
         private Camera playerCamera;
 
@@ -41,9 +42,9 @@ namespace ClientLibrary
 
         private Vector3 buildPos;
 
-        public GameObject currentTemplateBlock;//빌딩 모드중 생성된 templateBlock을 저장함
+        public GameObject newTemplateBlock;//빌딩 모드중 생성된 templateBlock을 저장함
 
-
+        GameObject selectedBlock;//빌딩 모드중 선택된 templateBlock을 저장함
 
         [SerializeField]
         private GameObject blockTemplatePrefab; //templateBlock
@@ -75,27 +76,24 @@ namespace ClientLibrary
 
         private int countInstalledBlock = 0; //설치된 블럭 수
 
-        private Stack<GameObject> blockTemplateStorage = new Stack<GameObject>(); //블락 템플릿 블럭들을 저장
+        private List<GameObject> blockTemplateStorage = new List<GameObject>(); //블락 템플릿 블럭들을 저장
 
-        //blockTemplateStorage 변수에 접근하기 위한 프로퍼티
+        /// <summary>
+        /// blockTemplateStorage 변수에 접근하기 위한 프로퍼티
+        /// </summary>
         public GameObject BlockTemplateStorage 
         {
-           
-            get {
-                if (countInstalledBlock <= 0)
-                {
-                    throw new System.ArgumentNullException();
-                }
-                countInstalledBlock--;
-                return blockTemplateStorage.Pop();
-            }
-
             set {
                 if(countInstalledBlock < limitBlocksInstallation)
                 {
-
+                    //인스턴트하면서
+                    //1. Add
+                    //2. ID부여 - BlockInfo 에 접근해서 부여
+                    //          - countInstalledBlock과 일치시킴
+                    GameObject currentBlock = Instantiate(value, value.transform.position, Quaternion.identity);
+                    blockTemplateStorage.Add(currentBlock);
+                    currentBlock.GetComponent<BlockInfo>().BlockId = countInstalledBlock;
                     countInstalledBlock++;
-                    blockTemplateStorage.Push(Instantiate(value, value.transform.position, Quaternion.identity));
                 }
                 else
                 {
@@ -115,10 +113,10 @@ namespace ClientLibrary
             {
 
                 //템플릿 블락 생성, 비활성화, 버튼연결, 메테리얼 적용
-                currentTemplateBlock = Instantiate(blockTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
-                currentTemplateBlock.SetActive(false);
+                newTemplateBlock = Instantiate(blockTemplatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                newTemplateBlock.SetActive(false);
                 //AddListenerBlock();
-                currentTemplateBlock.GetComponent<MeshRenderer>().material = templateMaterial;
+                newTemplateBlock.GetComponent<MeshRenderer>().material = templateMaterial;
 
                 //
                 preparationBlockSlot = Resources.Load("Prefabs/PreparationBlockSlot") as GameObject;
@@ -140,7 +138,7 @@ namespace ClientLibrary
                 tempButton2.onClick.AddListener(() => PlaceBlock());
 
                 grid = FindObjectOfType<Grid>();
-                bSys = GetComponent<BlockSystem>();
+                bSys = GetComponent<BlockInfo>();
                 playerCamera = FindObjectOfType<Camera>();
             }
         }
@@ -151,8 +149,8 @@ namespace ClientLibrary
         /// </summary>
         private void AddListenerBlock()
         {
-            currentTemplateBlock.GetComponent<BlockSystem>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
-            currentTemplateBlock.GetComponent<BlockSystem>().cancleButton.onClick.AddListener(() => SwitchBuildingMode());
+            newTemplateBlock.GetComponent<BlockInfo>().checkButton.onClick.AddListener(() => PhotonPlaceBlock());
+            newTemplateBlock.GetComponent<BlockInfo>().cancleButton.onClick.AddListener(() => SwitchBuildingMode());
         }
 
         //빌딩모드 시작 메서드
@@ -203,73 +201,103 @@ namespace ClientLibrary
             }
             else
             {
-                //E버튼 클릭시 빌딩 모드 실행, 다시 E 클릭시 빌딩모드 해제
-                //StartBuildingMode();
+                NewBlockInstantiate();
+                ClickEvent();
+            }
+        }
 
+        private void ClickEvent()
+        {
+            if (newTemplateBlock.activeSelf == false)
+            {
+                return;
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                print("AA");
 
-
-                if (buildModeOn)
+                selectedBlock = SelectTemplateBlock();
+                if(selectedBlock.transform.tag != "TemplateBlock")
                 {
-                    //RaycastHit buildPosHit;
+                    return;
+                }
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                selectedBlock.transform.position = PlaceCubeNear(ConvertRectToWorldPoint().Value);
+            }
+            if (Input.GetMouseButtonUp(0))
+            {
+                selectedBlock = null;
+            }
+        }
 
-                    //if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out buildPosHit, 10, buildableSurfacesLayer))
-                    //{
-                    //    Vector3 point = buildPosHit.point;
-                    //    temp = point;
-                    //    buildPos = PlaceCubeNear(point);
-                    //    buildPos.y = 0;
-                    //}
-                    //else
-                    //{
-                    //    if (currentTemplateBlock != null)
-                    //        Destroy(currentTemplateBlock.gameObject);
+        public void NewBlockInstantiate() {
 
-                    //}
+            //E버튼 클릭시 빌딩 모드 실행, 다시 E 클릭시 빌딩모드 해제
+            if (buildModeOn)
+            {
+            }
+
+            if (!buildModeOn && newTemplateBlock != null)
+            {
+                newTemplateBlock.SetActive(false);
+                canBuild = false;
+            }
+
+            //Block 템플릿 실행
+            if (buildModeOn && newTemplateBlock.activeSelf == false)
+            {
+                //이부분이 빌딩모드때 보이는 가상 블락 실행부분
+                newTemplateBlock.SetActive(true);
+                isDrag = true;
+
+                print("ClickDown");
+            }
+            //canBuild
+
+            if (canBuild && newTemplateBlock.activeSelf == true)
+            {
+                if (isDrag == true)
+                {
+                    //드래그 중 템플릿 블락 움직임
+                    newTemplateBlock.transform.position = PlaceCubeNear(ConvertRectToWorldPoint().Value);
                 }
 
-                if (!buildModeOn && currentTemplateBlock != null)
+                //버튼 땠을때 드래그 감지 해제
+                if (isDrag == false)
                 {
-                    //Destroy(currentTemplateBlock.gameObject);
-                    currentTemplateBlock.SetActive(false);
-                    canBuild = false;
-                }
-
-                //Block 템플릿 실행
-                if (buildModeOn && currentTemplateBlock.activeSelf == false)
-                {
-                    //이부분이 빌딩모드때 보이는 가상 블락 실행부분
-                    currentTemplateBlock.SetActive(true);
-                    isDrag = true;
-
-                    print("ClickDown");
-                }
-                //canBuild
-
-                if (canBuild && currentTemplateBlock.activeSelf == true)
-                {
-
-
-                    if (isDrag == true)
-                    {
-                        //드래그 중 템플릿 블락 움직임
-                        currentTemplateBlock.transform.position = PlaceCubeNear(ConvertRectToWorld().Value);
-                    }
-
-                    //버튼 땠을때 드래그 감지 해제
-                    if (isDrag == false)
-                    {
-                        currentTemplateBlock.transform.position = dragPosition;
-                        print("ClickUp");
-                    }
+                    newTemplateBlock.transform.position = dragPosition;
+                    print("ClickUp");
                 }
             }
         }
 
         /// <summary>
+        /// 템플릿블락을 선택해 리턴함
+        /// </summary>
+        public GameObject SelectTemplateBlock()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(ray, out hitInfo, 100f))
+            {
+                return hitInfo.transform.gameObject;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+        /// <summary>
         /// 스크린에 클릭된 좌표를 월드 좌표로 변환
         /// </summary>
         /// <returns></returns>
-        private Vector3? ConvertRectToWorld()
+        private Vector3? ConvertRectToWorldPoint()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -290,7 +318,7 @@ namespace ClientLibrary
         {
             canBuild = false;
 
-            currentTemplateBlock.SetActive(false);
+            newTemplateBlock.SetActive(false);
             //Destroy(currentTemplateBlock);
         }
 
@@ -305,16 +333,11 @@ namespace ClientLibrary
         [PunRPC]
         private void PlaceBlock()
         {
-            while(countInstalledBlock > 0)
+            foreach(GameObject blocks in blockTemplateStorage)
             {
-                PhotonNetwork.Instantiate(blockPrefab.name, BlockTemplateStorage.transform.position, Quaternion.identity);
+                PhotonNetwork.Instantiate(blockPrefab.name, blocks.transform.position, Quaternion.identity);
                 print("countInstalledBlock" + countInstalledBlock);
             }
-            //if (canBuild && currentTemplateBlock != null)
-            //{
-            //    //빌딩 모드에서 마우스 좌클릭시 블락 설치되는 부분 
-            //    GameObject newBlock = PhotonNetwork.Instantiate(blockPrefab.name, currentTemplateBlock.transform.position, Quaternion.identity);
-            //}
         }
 
         //Grid.cs 에서 클릭된 포지션의 grid 근삿값을 리턴함

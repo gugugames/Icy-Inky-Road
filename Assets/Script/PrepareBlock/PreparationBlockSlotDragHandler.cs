@@ -131,7 +131,7 @@ public class PreparationBlockSlotDragHandler : MonoBehaviour,IDragHandler, IEndD
         buildingSystem.SwitchBuildingMode();
 
         //생성된 오브젝트를 빌딩 시스템의 블락 스토리지에 추가
-        buildingSystem.BlockTemplateStorage = buildingSystem.currentTemplateBlock; 
+        buildingSystem.BlockTemplateStorage = buildingSystem.newTemplateBlock; 
     }
 
     /// <summary>
