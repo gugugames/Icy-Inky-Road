@@ -208,22 +208,25 @@ namespace ClientLibrary
 
         private void ClickEvent()
         {
-            if (newTemplateBlock.activeSelf == false)
+            if (newTemplateBlock.activeSelf == true)
             {
                 return;
             }
             if (Input.GetMouseButtonDown(0))
             {
-                print("AA");
+                print("ClickEvent");
 
                 selectedBlock = SelectTemplateBlock();
-                if(selectedBlock.transform.tag != "TemplateBlock")
+
+                print("selectedBlock : " + selectedBlock);
+                if (selectedBlock.transform.tag != "TemplateBlock")
                 {
                     return;
                 }
             }
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButton(0))
             {
+                print("GetMouseButtonDown");
                 selectedBlock.transform.position = PlaceCubeNear(ConvertRectToWorldPoint().Value);
             }
             if (Input.GetMouseButtonUp(0))

@@ -257,7 +257,7 @@ MonoBehaviour:
   buildableSurfacesLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  currentTemplateBlock: {fileID: 0}
+  newTemplateBlock: {fileID: 0}
   blockTemplatePrefab: {fileID: 1856744570630942, guid: 0e53df7c59335e446bebb8ce6a6d9420,
     type: 2}
   blockPrefab: {fileID: 1876210472984152, guid: 34af4eee2a83f9749991148c06c68eb9,

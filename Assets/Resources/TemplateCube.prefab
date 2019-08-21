@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114296445386325188}
   m_Layer: 9
   m_Name: TemplateCube
-  m_TagString: Untagged
+  m_TagString: TemplateBlock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,6 +110,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkButton: {fileID: 0}
   cancleButton: {fileID: 0}
-  allBlockTypes:
-  - blockName: 
-    blockMat: {fileID: 2100000, guid: fb5572bea94cc8943a972c87d6d9462e, type: 2}
