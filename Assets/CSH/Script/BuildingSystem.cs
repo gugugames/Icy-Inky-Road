@@ -206,6 +206,9 @@ namespace ClientLibrary
             }
         }
 
+        /// <summary>
+        /// 블락을 클릭하면 해당 블락을 가져와 움직임을 컨트롤하는 메서드
+        /// </summary>
         private void ClickEvent()
         {
             if (newTemplateBlock.activeSelf == true)
@@ -218,11 +221,21 @@ namespace ClientLibrary
 
                 selectedBlock = SelectTemplateBlock();
 
-                print("selectedBlock : " + selectedBlock);
-                if (selectedBlock.transform.tag != "TemplateBlock")
+                if (selectedBlock.tag != "TemplateBlock")
                 {
+                    print("selectedBlock = null;");
+                    selectedBlock = null;
                     return;
                 }
+                else
+                {
+                    //selectedBlock 아웃라인 On
+                    selectedBlock.GetComponent<Outline>().enabled = true;
+                }
+            }
+            if(selectedBlock == null)
+            {
+                return;
             }
             if (Input.GetMouseButton(0))
             {
@@ -231,6 +244,7 @@ namespace ClientLibrary
             }
             if (Input.GetMouseButtonUp(0))
             {
+                selectedBlock.GetComponent<Outline>().enabled = false;
                 selectedBlock = null;
             }
         }
