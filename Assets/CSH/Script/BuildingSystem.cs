@@ -211,15 +211,16 @@ namespace ClientLibrary
         /// </summary>
         private void ClickEvent()
         {
+            bool dragInPanel = false;
+
             if (newTemplateBlock.activeSelf == true)
             {
                 return;
             }
             if (Input.GetMouseButtonDown(0))
             {
-                print("ClickEvent");
 
-                selectedBlock = SelectTemplateBlock();
+                selectedBlock = ObjectAtPoint();
 
                 if (selectedBlock.tag != "TemplateBlock")
                 {
@@ -233,20 +234,60 @@ namespace ClientLibrary
                     selectedBlock.GetComponent<Outline>().enabled = true;
                 }
             }
+
             if(selectedBlock == null)
             {
                 return;
             }
+
+
             if (Input.GetMouseButton(0))
             {
-                print("GetMouseButtonDown");
-                selectedBlock.transform.position = PlaceCubeNear(ConvertRectToWorldPoint().Value);
+                Vector3? point;
+                if((point = ConvertScreenToWorldPoint().Value) == null)
+                {
+                    print("blockposition null");
+                    UndoSelectBlock();
+                    return;
+                }
+
+                selectedBlock.transform.position = PlaceCubeNear(point.Value);
+
+                //드래그 중 판넬쪽으로 드래그 하였을 때
+                if (ObjectAtPoint().tag == "PreparationBlockPanel")
+                {
+                    dragInPanel = true;
+                }
+                else
+                {
+                    dragInPanel = false;
+                }
             }
             if (Input.GetMouseButtonUp(0))
             {
-                selectedBlock.GetComponent<Outline>().enabled = false;
-                selectedBlock = null;
+                UndoSelectBlock();
+
+                //판넬에서 드래그를 해제하면 삭제
+                if (dragInPanel)
+                {
+                    DestroyTemplateBlock(selectedBlock);
+                }
             }
+        }
+
+        private void DestroyTemplateBlock(GameObject _object)
+        {
+            blockTemplateStorage.Remove(_object);
+            Destroy(_object);
+        }
+
+        /// <summary>
+        /// 선택된 블락을 해제 하는 메서드
+        /// </summary>
+        private void UndoSelectBlock()
+        {
+            selectedBlock.GetComponent<Outline>().enabled = false;
+            selectedBlock = null;
         }
 
         public void NewBlockInstantiate() {
@@ -278,7 +319,7 @@ namespace ClientLibrary
                 if (isDrag == true)
                 {
                     //드래그 중 템플릿 블락 움직임
-                    newTemplateBlock.transform.position = PlaceCubeNear(ConvertRectToWorldPoint().Value);
+                    newTemplateBlock.transform.position = PlaceCubeNear(ConvertScreenToWorldPoint().Value);
                 }
 
                 //버튼 땠을때 드래그 감지 해제
@@ -293,7 +334,7 @@ namespace ClientLibrary
         /// <summary>
         /// 템플릿블락을 선택해 리턴함
         /// </summary>
-        public GameObject SelectTemplateBlock()
+        public GameObject ObjectAtPoint()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -314,9 +355,14 @@ namespace ClientLibrary
         /// 스크린에 클릭된 좌표를 월드 좌표로 변환
         /// </summary>
         /// <returns></returns>
-        private Vector3? ConvertRectToWorldPoint()
+        private Vector3? ConvertScreenToWorldPoint()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray? ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if(Camera.main.ScreenPointToRay(Input.mousePosition) is Ray ray)
+            {
+
+            }
 
             RaycastHit hitInfo;
 
