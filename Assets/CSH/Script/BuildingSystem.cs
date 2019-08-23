@@ -357,12 +357,14 @@ namespace ClientLibrary
         /// <returns></returns>
         private Vector3? ConvertScreenToWorldPoint()
         {
-            Ray? ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if(Camera.main.ScreenPointToRay(Input.mousePosition) is Ray ray)
+            Vector3? mousePosition;
+            
+            if((mousePosition = Input.mousePosition) == null)
             {
-
+                return null;
             }
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             RaycastHit hitInfo;
 
